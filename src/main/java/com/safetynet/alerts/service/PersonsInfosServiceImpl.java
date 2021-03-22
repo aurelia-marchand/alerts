@@ -6,13 +6,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.alerts.dao.PersonsInfosDaoI;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
 import com.safetynet.alerts.dto.PersonsByStationDto;
+import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.MedicalRecord;
+import com.safetynet.alerts.model.Person;
+import com.safetynet.alerts.model.PersonsInfos;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -20,66 +24,108 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Data
 @Service
-public class PersonsInfosServiceImpl implements PersonsInfosServiceI{
+public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 
 	@Autowired
 	PersonsInfosDaoI personsInfosDao;
 	@Autowired
 	PeopleCoveredDto peopleCoveredDto;
+	@Autowired
+	PersonsByStationDto personsByStationDto;
 
 	@Override
-	public PeopleCoveredDto GetListPersonsByStationNumber(int station) {
+	public PeopleCoveredDto getListPersonsByStationNumber(int station) {
 
 		// On récupère les personnes couvertes par la station via les méthodes de l'interface Dao
-		List<PersonsByStationDto> personsByStationDto = personsInfosDao.findPersonsByStationNumber(station);
-		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByPersons(personsByStationDto);
+		
+		PersonsInfos personsInfos = personsInfosDao.findPersonsByStationNumber(station);
+		
+		List<Firestation> firestations = personsInfos.getFirestations();
+		List<Person> persons = personsInfos.getPersons();
+				
+		List<PersonsByStationDto> liste = new ArrayList<>();
+		// Boucle pour récupérer l'adress de la station puis comparer avec adresse des personnes qu'on récupère si identique
+		for (Firestation firestation : firestations) {
+			if (firestation.getStation() == station) {
+				String address = firestation.getAddress();
+				for (Person person : persons) {
+					if (person.getAddress().equalsIgnoreCase(address)) {
+						// Utilisation ModelMapper pour map Dto/entité
+						ModelMapper modelMapper = new ModelMapper();
+						personsByStationDto = modelMapper.map(person, PersonsByStationDto.class);
+						liste.add(personsByStationDto);
+					}
+				}
+			}
+		}
+		
+		
+		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByPersons(liste);
 		
 		// On initialise une liste pour pouvoir y stocker nos résultats
 		List<MedicalRecord> listeMedicalRecord = new ArrayList<>();
 
 		// Boucle pour récupérer les données médicales des personnes couvertes par la station
-		for (MedicalRecord medicalRecord : medicalRecords) {
-			for (PersonsByStationDto personByStationDto : personsByStationDto) {
-				if (personByStationDto.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
-						&& personByStationDto.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
-					
-					listeMedicalRecord.add(medicalRecord);
+		try {
+			for (MedicalRecord medicalRecord : medicalRecords) {
+				for (PersonsByStationDto personByStationDto : liste) {
+					if (personByStationDto.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
+							&& personByStationDto.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
+						
+						listeMedicalRecord.add(medicalRecord);
+					}
 				}
 			}
+			log.debug("Récupération des données médicales pour calcul de l'âge");
+		} catch (Exception e) {
+			log.error("erreur lors de la récupération des informations médicales");
+			e.printStackTrace();
 		}
 		// On Complète notre Dto avant de le renvoyer
 		peopleCoveredDto.setNumberOfAdults(calculateNumberOfAdults(listeMedicalRecord));
 		peopleCoveredDto.setNumberOfChildren(calculateNumberOfChildren(listeMedicalRecord));
-		peopleCoveredDto.setPersonsByStationDto(personsByStationDto);
+		peopleCoveredDto.setPersonsByStationDto(liste);
 
 		return peopleCoveredDto;
 	}
 
-	private int calculateNumberOfChildren(List<MedicalRecord> listeMedicalRecord) {
+	public static int calculateNumberOfChildren(List<MedicalRecord> listeMedicalRecord) {
 		Integer numberOfChildren = 0;
 		List<MedicalRecord> listeMedicalRecords = listeMedicalRecord;
-		for (MedicalRecord medicalRecord : listeMedicalRecords) {
+		try {
+			for (MedicalRecord medicalRecord : listeMedicalRecords) {
 				int age = calculateAge(medicalRecord.getBirthdate());
 				if (age <= 18) {
 					numberOfChildren++;
 				}
+			}
+			log.debug("calcul du nombre d'enfants en cours...");
+		} catch (Exception e) {
+			log.error("erreur lors du calcul du nombre d'enfants");
+			e.printStackTrace();
 		}
 		return numberOfChildren;
 	}
 
-	private int calculateNumberOfAdults(List<MedicalRecord> listeMedicalRecord) {
+	public static int calculateNumberOfAdults(List<MedicalRecord> listeMedicalRecord) {
 		Integer numberOfAdults = 0;
 		List<MedicalRecord> listeMedicalRecords = listeMedicalRecord;
-		for (MedicalRecord medicalRecord : listeMedicalRecords) {
+		try {
+			for (MedicalRecord medicalRecord : listeMedicalRecords) {
 				int age = calculateAge(medicalRecord.getBirthdate());
 				if (age > 18) {
 					numberOfAdults++;
+				}
 			}
+			log.debug("calcul du nombre d'adultes en cours...");
+		} catch (Exception e) {
+			log.error("erreur lors du calcul du nombre d'adultes");
+			e.printStackTrace();
 		}
 		return numberOfAdults;
 	}
 
-	private int calculateAge(String birthdate) {
+	public static int calculateAge(String birthdate) {
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 

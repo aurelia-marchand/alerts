@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import com.safetynet.alerts.dto.PersonsByStationDto;
 import com.safetynet.alerts.model.Firestation;
@@ -16,7 +16,7 @@ import com.safetynet.alerts.model.PersonsInfos;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Repository
+@Component
 public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 
 	@Autowired
@@ -27,29 +27,19 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 	PersonsByStationDto personsByStationDto;
 
 	@Override
-	public List<PersonsByStationDto> findPersonsByStationNumber(int station) {
+	public  PersonsInfos findPersonsByStationNumber(int station) {
 		// Récupération des données du fichier Json via interface
 		personsInfos=accessJson.getData();
-		log.debug("test");
+		
 		List<Person> persons = personsInfos.getPersons();
 		List<Firestation> firestations = personsInfos.getFirestations();
+		
+		PersonsInfos personsInfos = new PersonsInfos();
+		personsInfos.setFirestations(firestations);
+		personsInfos.setPersons(persons);
 
-		List<PersonsByStationDto> liste = new ArrayList<>();
-		// Boucle pour récupérer l'adress de la station puis comparer avec adresse des personnes qu'on récupère si identique
-		for (Firestation firestation : firestations) {
-			if (firestation.getStation() == station) {
-				String address = firestation.getAddress();
-				for (Person person : persons) {
-					if (person.getAddress().equalsIgnoreCase(address)) {
-						// Utilisation ModelMapper pour map Dto/entité
-						ModelMapper modelMapper = new ModelMapper();
-						personsByStationDto = modelMapper.map(person, PersonsByStationDto.class);
-						liste.add(personsByStationDto);
-					}
-				}
-			}
-		}
-		return liste;
+	
+		return personsInfos;
 	}
 
 	@Override

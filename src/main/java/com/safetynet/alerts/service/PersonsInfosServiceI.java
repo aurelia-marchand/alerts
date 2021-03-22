@@ -4,5 +4,5 @@ import com.safetynet.alerts.dto.PeopleCoveredDto;
 
 public interface PersonsInfosServiceI {
 
-	public PeopleCoveredDto GetListPersonsByStationNumber(int station);
+	public PeopleCoveredDto getListPersonsByStationNumber(int station);
 }

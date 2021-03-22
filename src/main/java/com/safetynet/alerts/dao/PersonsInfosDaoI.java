@@ -4,10 +4,12 @@ import java.util.List;
 
 import com.safetynet.alerts.dto.PersonsByStationDto;
 import com.safetynet.alerts.model.MedicalRecord;
+import com.safetynet.alerts.model.Person;
+import com.safetynet.alerts.model.PersonsInfos;
 
 public interface PersonsInfosDaoI {
 	
-	public List<PersonsByStationDto> findPersonsByStationNumber(int station);
+	public PersonsInfos findPersonsByStationNumber(int station);
 
 	public List<MedicalRecord> findMedicalRecordsByPersons(List<PersonsByStationDto> personsByStationDto2);
 }
