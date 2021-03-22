@@ -21,8 +21,10 @@ Installing
 A step by step series of examples that tell you how to get a development env running:
 1.Install Java:
 https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html
+
 2.Install Maven:
 https://maven.apache.org/install.html
+
 3. Install Spring tools suit
 https://spring.io/tools
 
