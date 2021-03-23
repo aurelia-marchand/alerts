@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.alerts.dao.PersonsInfosDaoI;
+import com.safetynet.alerts.dto.ChildAlertDto;
+import com.safetynet.alerts.dto.ChildrenByAddressDto;
+import com.safetynet.alerts.dto.FamilyMembersDto;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
 import com.safetynet.alerts.dto.PersonsByStationDto;
 import com.safetynet.alerts.model.Firestation;
@@ -42,7 +45,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		
 		List<Firestation> firestations = personsInfos.getFirestations();
 		List<Person> persons = personsInfos.getPersons();
-				
+				log.debug("liste 1 avant boucle : size "+ persons.size()+ "personne" + persons);
 		List<PersonsByStationDto> liste = new ArrayList<>();
 		// Boucle pour récupérer l'adress de la station puis comparer avec adresse des personnes qu'on récupère si identique
 		for (Firestation firestation : firestations) {
@@ -58,8 +61,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 				}
 			}
 		}
-		
-		
+		log.debug("liste 2 après boucle ; size "+ persons.size()+ "personne :" + liste);
 		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByPersons(liste);
 		
 		// On initialise une liste pour pouvoir y stocker nos résultats
@@ -134,6 +136,44 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		LocalDate birthDate = date;
 		LocalDate currentDate = LocalDate.now();
 		return Period.between(birthDate, currentDate).getYears();
+	}
+
+	@Override
+	public ChildAlertDto getListChildrenByAddress(String address) {
+		List<Person> personneByAddress = personsInfosDao.findPersonsByAddress(address);
+
+		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByPerson(personneByAddress);
+
+		List<FamilyMembersDto> familyMembersDto = new ArrayList<>();
+		FamilyMembersDto FamilyMember = new FamilyMembersDto();
+		ChildrenByAddressDto childrenByAddressDto = new ChildrenByAddressDto();
+		List<ChildrenByAddressDto> childrenByAddress = new ArrayList<>();
+		ChildAlertDto childAlert = new ChildAlertDto();
+			
+		for (Person person : personneByAddress) {
+			for (MedicalRecord medicalRecord : medicalRecords) {
+				if (medicalRecord.getFirstName().equalsIgnoreCase(person.getFirstName())&&medicalRecord.getLastName().equalsIgnoreCase(person.getLastName())) {
+					int age = calculateAge(medicalRecord.getBirthdate());
+					if(age <= 18) {
+						// Utilisation ModelMapper pour map Dto/entité
+						ModelMapper modelMapper = new ModelMapper();
+						childrenByAddressDto = modelMapper.map(person, ChildrenByAddressDto.class);
+						childrenByAddressDto.setAge(age);
+						childrenByAddress.add(childrenByAddressDto);
+					} else {
+						ModelMapper modelMapper = new ModelMapper();
+						FamilyMember = modelMapper.map(person, FamilyMembersDto.class);
+						FamilyMember.setAge(age);
+						familyMembersDto.add(FamilyMember);
+					}
+				}
+			}
+			childAlert.setChildrenByAdress(childrenByAddress);
+			childAlert.setFamilyMembersDto(familyMembersDto);
+			
+		}
+		
+		return childAlert;
 	}
 
 }

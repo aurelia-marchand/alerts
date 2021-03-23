@@ -20,7 +20,8 @@ public class FirestationServiceImpl implements FirestationServiceI {
 	@Override
 	public Firestation getFirestation(String address) {
 		log.debug("service demande au dao recherche station à l'adresse : " + address);
-		return firestationDao.getFirestation(address);
+		Firestation firestation = firestationDao.getFirestation(address);
+		return firestation;
 	}
 
 	@Override

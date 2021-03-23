@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
 import com.safetynet.alerts.service.PersonsInfosServiceI;
 
@@ -44,6 +45,34 @@ public class PersonsInfosController {
 		}
 
 		return peopleCoverdeDto;
+	}
+	
+	/**
+	 * Get list children by address and family members
+	 * 
+	 * @param - address
+	 * @return - children by address with firstname, lastname, old
+	 *         and list of family members
+	 */
+	@GetMapping("/childAlert/{address}")
+	public ChildAlertDto GetChildrenByAddress(@PathVariable String address) {
+		log.info("Requête : demande liste des enfants à l'adresse " + address);
+		ChildAlertDto childAlertDto = null;
+		try {
+			childAlertDto = personsInfosService.getListChildrenByAddress(address);
+
+			if (childAlertDto == null) {
+				log.info("Pas d'enfants à cette adresse");
+			} else {
+				log.info("Requête ok, liste des enfants bien récupérée ");
+			}
+
+		} catch (Exception e) {
+			log.error("erreur lors de la récupération de la liste des enfants, erreur : " + e);
+			e.printStackTrace();
+		}
+
+		return childAlertDto;
 	}
 
 }

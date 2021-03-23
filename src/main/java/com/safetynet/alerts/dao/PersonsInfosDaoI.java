@@ -12,4 +12,8 @@ public interface PersonsInfosDaoI {
 	public PersonsInfos findPersonsByStationNumber(int station);
 
 	public List<MedicalRecord> findMedicalRecordsByPersons(List<PersonsByStationDto> personsByStationDto2);
+
+	public List<Person> findPersonsByAddress(String address);
+
+	public List<MedicalRecord> findMedicalRecordsByPerson(List<Person> personneByAddress);
 }

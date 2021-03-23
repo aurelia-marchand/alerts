@@ -51,14 +51,19 @@ public class PersonController {
 	@GetMapping("/person/{firstName}/{lastName}")
 	public Person getPerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
 		log.info("GET /person/{"+ firstName +"}/{"+lastName+"} called");
-
-		Person person = personService.getPerson(firstName, lastName);
-		log.debug("personne : " + person);
-		if (person == null) {
-			log.error("personne introuvable");
-			throw new PersonIntrouvableException("La personne demandée n'existe pas");
-		}
+		Person person = null;
+		try {
+			person = personService.getPerson(firstName, lastName);
+			log.debug("personne : " + person);
+			if (person == null) {
+				log.error("personne introuvable");
+				throw new PersonIntrouvableException("La personne demandée n'existe pas");
+			}
 			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		return person;
 	}
 
@@ -70,14 +75,17 @@ public class PersonController {
 	public void deletePerson(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
 		log.info("DELETE /person/{firstName}/{lastName} called");
 
-		Person person = personService.getPerson(firstName, lastName);
-
-		if (person == null) {
-			log.error("personne introuvable");
-			throw new PersonIntrouvableException("La personne demandée n'existe pas");
-		} else {
-			personService.deletePerson(firstName, lastName);
-			log.info("Requête ok, " + firstName + " " + lastName + " a bien été supprimé");
+		try {
+			Person person = personService.getPerson(firstName, lastName);
+			if (person == null) {
+				log.error("personne introuvable");
+				throw new PersonIntrouvableException("La personne demandée n'existe pas");
+			} else {
+				personService.deletePerson(firstName, lastName);
+				log.info("Requête ok, " + firstName + " " + lastName + " a bien été supprimé");
+			} 
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 

@@ -3,7 +3,6 @@ package com.safetynet.alerts.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -49,5 +48,38 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 
 		return medicalRecords;
 
+	}
+
+	@Override
+	public List<Person> findPersonsByAddress(String address) {
+		personsInfos=accessJson.getData();
+		List<Person> persons = personsInfos.getPersons();
+		
+		List<Person> resultPersonByAddres = new ArrayList<>();
+		for (Person person : persons) {
+			if (person.getAddress().equalsIgnoreCase(address)) {
+				resultPersonByAddres.add(person);
+			}
+		}
+		
+		return resultPersonByAddres;
+	}
+
+	@Override
+	public List<MedicalRecord> findMedicalRecordsByPerson(List<Person> personneByAddress) {
+		personsInfos=accessJson.getData();
+		List<MedicalRecord> medicalRecords = personsInfos.getMedicalrecords();
+
+		List<MedicalRecord> resultatMedicalRecordByName = new ArrayList<>();
+		for (MedicalRecord medicalRecord : medicalRecords) {
+			for(Person person : personneByAddress) {
+				if (medicalRecord.getFirstName().equalsIgnoreCase(person.getFirstName())&&medicalRecord.getLastName().equalsIgnoreCase(person.getLastName())) {
+					resultatMedicalRecordByName.add(medicalRecord);
+				}
+			}
+			
+		}
+		
+		return resultatMedicalRecordByName;
 	}
 }

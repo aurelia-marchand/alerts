@@ -84,8 +84,8 @@ public class FirestationController {
 	 * @return url firestation update
 	 * 
 	 */
-	@PutMapping("/firestation/{address}")
-	public ResponseEntity<Void> putFirestation(@PathVariable("address") String address, @RequestBody Firestation firestationToPut) {
+	@PutMapping(path = "/firestation/{address}", consumes=MediaType.APPLICATION_JSON_VALUE, produces =MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> putFirestation(@PathVariable("address") String address, @RequestBody Firestation firestationToPut) {
 
 		log.info("PUT /firestation/"+address+" called");
 		URI location = null;

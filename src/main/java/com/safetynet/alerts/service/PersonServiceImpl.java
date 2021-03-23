@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import com.safetynet.alerts.dao.PersonDaoI;
 import com.safetynet.alerts.model.Person;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Data
 @Service
 public class PersonServiceImpl implements PersonServiceI{
 

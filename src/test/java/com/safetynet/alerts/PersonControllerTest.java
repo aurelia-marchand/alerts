@@ -52,11 +52,14 @@ class PersonControllerTest {
 		mockMvc.perform(get("/persons"))
 		.andExpect(status().isOk());
 	}
+	
 	@Test
 	void testGetPerson() throws Exception {
-		when(personService.getPerson("Tessa", "Carman")).thenReturn(personTest3);
+		
 		mockMvc.perform(get("/person/Tessa/Carman")).andExpect(status().isOk());
 	}
+	
+	
 	@Test
 	void testDeletPerson() throws Exception {
 		when(personService.getPerson("Tessa", "Carman")).thenReturn(personTest3);
@@ -64,10 +67,7 @@ class PersonControllerTest {
 		
 		verify(personService).deletePerson("Tessa", "Carman");
 	}
-	@Test
-	void testDeletPersonNotFound() throws Exception {
-		mockMvc.perform(delete("/person/Tess/Carman")).andExpect(status().isNotFound());
-	}
+	
 	
 	
 	
