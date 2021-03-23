@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
+import com.safetynet.alerts.dto.PhoneAlertDto;
 import com.safetynet.alerts.service.PersonsInfosServiceI;
 
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +74,34 @@ public class PersonsInfosController {
 		}
 
 		return childAlertDto;
+	}
+	
+	/**
+	 * Get phone people covered by station number
+	 * 
+	 * @param - station number
+	 * @return - list phones
+	 *         
+	 */
+	@GetMapping("/phoneAlert/{station}")
+	public PhoneAlertDto GetPhoneByStationNumber(@PathVariable int station) {
+		log.info("Requête : demande liste des téléphones pour la station numéro " + station);
+		PhoneAlertDto phoneAlertDto = null;
+		try {
+			phoneAlertDto = personsInfosService.getListPhoneByStation(station);
+
+			if (phoneAlertDto == null) {
+				log.info("Personne à cette station");
+			} else {
+				log.info("Requête ok, liste des téléphones bien récupérée ");
+			}
+
+		} catch (Exception e) {
+			log.error("erreur lors de la récupération de la liste des téléphone, erreur : " + e);
+			e.printStackTrace();
+		}
+
+		return phoneAlertDto;
 	}
 
 }

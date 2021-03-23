@@ -16,6 +16,7 @@ import com.safetynet.alerts.dto.ChildrenByAddressDto;
 import com.safetynet.alerts.dto.FamilyMembersDto;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
 import com.safetynet.alerts.dto.PersonsByStationDto;
+import com.safetynet.alerts.dto.PhoneAlertDto;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
@@ -174,6 +175,33 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		}
 		
 		return childAlert;
+	}
+
+	@Override
+	public PhoneAlertDto getListPhoneByStation(int station) {
+		
+				PersonsInfos personsInfos = personsInfosDao.findPersonsByStationNumber(station);
+				List<Firestation> firestations = personsInfos.getFirestations();
+				List<Person> persons = personsInfos.getPersons();
+				
+				List<String> phones = new ArrayList<>();
+				PhoneAlertDto phoneAlertDto = new PhoneAlertDto();
+				
+				for (Firestation firestation : firestations) {
+					if (firestation.getStation() == station) {
+						String address = firestation.getAddress();
+						for (Person person : persons) {
+							if (person.getAddress().equalsIgnoreCase(address)) {
+								String phone = person.getPhone();
+								phones.add(phone);
+							}
+						}
+					}
+				}
+				
+				phoneAlertDto.setPhones(phones);
+				log.debug("phoneAlertDto" + phoneAlertDto);
+		return phoneAlertDto;
 	}
 
 }
