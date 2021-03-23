@@ -14,7 +14,9 @@ import com.safetynet.alerts.dao.PersonsInfosDaoI;
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.ChildrenByAddressDto;
 import com.safetynet.alerts.dto.FamilyMembersDto;
+import com.safetynet.alerts.dto.FireListDto;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
+import com.safetynet.alerts.dto.PeopleFireDto;
 import com.safetynet.alerts.dto.PersonsByStationDto;
 import com.safetynet.alerts.dto.PhoneAlertDto;
 import com.safetynet.alerts.model.Firestation;
@@ -202,6 +204,49 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 				phoneAlertDto.setPhones(phones);
 				log.debug("phoneAlertDto" + phoneAlertDto);
 		return phoneAlertDto;
+	}
+
+	@Override
+	public FireListDto getPeopleByAddress(String address) {
+		List<Person> peopleByAddress = personsInfosDao.findPersonsByAddress(address);
+		List<MedicalRecord> medicalRecords =  personsInfosDao.findMedicalRecordsByPerson(peopleByAddress);
+		int station = personsInfosDao.getStationByAddress(address);
+		
+		List<String> medications = new ArrayList<>();
+		List<String> allergies = new ArrayList<>();
+		PeopleFireDto peopleFireDto = new PeopleFireDto();
+		
+		List<PeopleFireDto> peoplesFireDto = new ArrayList<>();
+		FireListDto fireListDto = new FireListDto();
+		fireListDto.setAddress(address);
+		
+		
+		for (Person personByAddress : peopleByAddress) {
+			for(MedicalRecord medicalRecord : medicalRecords) {
+				if (personByAddress.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
+						&& personByAddress.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
+					medications = medicalRecord.getMedications();
+					allergies = medicalRecord.getAllergies();
+					log.debug("allergies : " + allergies);
+					
+					
+					ModelMapper modelMapper = new ModelMapper();
+					peopleFireDto = modelMapper.map(personByAddress, PeopleFireDto.class);
+					peopleFireDto.setAge(calculateAge(medicalRecord.getBirthdate()));
+					peopleFireDto.setMedications(medications);
+					peopleFireDto.setAllergies(allergies);
+
+					peoplesFireDto.add(peopleFireDto);
+					
+				}
+			}
+		}
+		
+		fireListDto.setPeopleFireDto(peoplesFireDto);
+		fireListDto.setStation(station);
+		
+		
+		return fireListDto;
 	}
 
 }

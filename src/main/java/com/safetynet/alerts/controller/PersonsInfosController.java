@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
+import com.safetynet.alerts.dto.FireListDto;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
 import com.safetynet.alerts.dto.PhoneAlertDto;
 import com.safetynet.alerts.service.PersonsInfosServiceI;
@@ -102,6 +103,34 @@ public class PersonsInfosController {
 		}
 
 		return phoneAlertDto;
+	}
+	
+	/**
+	 * Get list People by address with medical record and station number
+	 * 
+	 * @param - address
+	 * @return - list people with medical record
+	 *         
+	 */
+	@GetMapping("/fire/{address}")
+	public FireListDto GetPeopleByAddress(@PathVariable String address) {
+		log.info("Requête : demande liste des personnes à l'adresse " + address);
+		FireListDto fireListDto = null;
+		try {
+			fireListDto = personsInfosService.getPeopleByAddress(address);
+
+			if (fireListDto == null) {
+				log.info("Personne à cette adresse");
+			} else {
+				log.info("Requête ok, liste des personnes bien récupérée ");
+			}
+
+		} catch (Exception e) {
+			log.error("erreur lors de la récupération de la liste des personnes, erreur : " + e);
+			e.printStackTrace();
+		}
+
+		return fireListDto;
 	}
 
 }

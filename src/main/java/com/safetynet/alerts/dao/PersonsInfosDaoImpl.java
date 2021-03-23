@@ -82,4 +82,16 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 		
 		return resultatMedicalRecordByName;
 	}
+
+	@Override
+	public int getStationByAddress(String address) {
+		personsInfos=accessJson.getData();
+		List<Firestation> firestations = personsInfos.getFirestations();
+		int station = 0;
+		for(Firestation firestation : firestations) {
+			if (firestation.getAddress().equalsIgnoreCase(address)) {
+				station = firestation.getStation();			}
+		}
+		return station;
+	}
 }

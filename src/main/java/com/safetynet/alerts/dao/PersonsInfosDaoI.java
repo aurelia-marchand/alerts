@@ -16,4 +16,6 @@ public interface PersonsInfosDaoI {
 	public List<Person> findPersonsByAddress(String address);
 
 	public List<MedicalRecord> findMedicalRecordsByPerson(List<Person> personneByAddress);
+
+	public int getStationByAddress(String address);
 }
