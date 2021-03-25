@@ -1,12 +1,18 @@
 package com.safetynet.alerts.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.FireListDto;
+import com.safetynet.alerts.dto.FloodStationsDto;
+import com.safetynet.alerts.dto.PeopleByAddressDto;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
 import com.safetynet.alerts.dto.PhoneAlertDto;
 import com.safetynet.alerts.service.PersonsInfosServiceI;
@@ -131,6 +137,34 @@ public class PersonsInfosController {
 		}
 
 		return fireListDto;
+	}
+	
+	/**
+	 * Get list People by stations number list with medical record and group by address
+	 * 
+	 * @param - list station number
+	 * @return - list people with medical record group by address
+	 *         
+	 */
+	@GetMapping("/flood/stations")
+	public List<FloodStationsDto> GetPeopleByStation(@RequestParam List<Integer> stations) {
+		log.info("Requête : demande liste des personnes pour les stations " + stations);
+		 List<FloodStationsDto> floodStationsDto  = new ArrayList<>();
+		try {
+			floodStationsDto = personsInfosService.getPeopleByListStation(stations);
+
+			if (floodStationsDto == null) {
+				log.info("Personne à ces stations");
+			} else {
+				log.info("Requête ok, liste des personnes bien récupérée ");
+			}
+
+		} catch (Exception e) {
+			log.error("erreur lors de la récupération de la liste des personnes, erreur : " + e);
+			e.printStackTrace();
+		}
+
+		return floodStationsDto;
 	}
 
 }

@@ -8,10 +8,9 @@ import lombok.Data;
 
 @Data
 @Component
-public class FireListDto {
+public class FloodStationsDto {
 
-	
-	int station;
-	List<PeopleFireDto> peopleFireDto;
-	
+
+
+	List<PeopleByAddressDto> peoplesByAddressDto;
 }

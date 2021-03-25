@@ -1,6 +1,7 @@
 package com.safetynet.alerts.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import com.safetynet.alerts.dto.PersonsByStationDto;
 import com.safetynet.alerts.model.MedicalRecord;
@@ -18,4 +19,8 @@ public interface PersonsInfosDaoI {
 	public List<MedicalRecord> findMedicalRecordsByPerson(List<Person> personneByAddress);
 
 	public int getStationByAddress(String address);
+
+	public Set<String> findAddressByStation(int station);
+
+	public List<Person> findPersonsByStation(List<Integer> stations);
 }

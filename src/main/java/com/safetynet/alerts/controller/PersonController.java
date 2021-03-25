@@ -61,7 +61,7 @@ public class PersonController {
 			}
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 		return person;
