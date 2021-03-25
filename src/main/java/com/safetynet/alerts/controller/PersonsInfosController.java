@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
+import com.safetynet.alerts.dto.EmailListDto;
 import com.safetynet.alerts.dto.FireListDto;
 import com.safetynet.alerts.dto.FloodStationsDto;
-import com.safetynet.alerts.dto.PeopleByAddressDto;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.dto.PhoneAlertDto;
@@ -34,17 +34,17 @@ public class PersonsInfosController {
 	 * @return - people covered by station, firstname, lastname, address, phone and
 	 *         the number of adults and children
 	 */
-	@GetMapping("/firestation/{station}")
-	public PeopleCoveredDto GetPersonsByStation(@PathVariable int station) {
-		log.info("Requête : demande liste des personnes couvertes par la station numéro " + station);
+	@GetMapping("/firestation")
+	public PeopleCoveredDto GetPersonsByStation(@RequestParam int stationNumber) {
+		log.info("Requête : demande liste des personnes couvertes par la station numéro " + stationNumber);
 		PeopleCoveredDto peopleCoverdeDto = null;
 		try {
-			peopleCoverdeDto = personsInfosService.getListPersonsByStationNumber(station);
+			peopleCoverdeDto = personsInfosService.getListPersonsByStationNumber(stationNumber);
 
 			if (peopleCoverdeDto.getNumberOfAdults() == 0 && peopleCoverdeDto.getNumberOfChildren() == 0) {
 				log.error("Ce numéro de station ne retourne personne");
 			} else {
-				log.info("Requête ok, liste des personnes couvertes par la station numéro : " + station
+				log.info("Requête ok, liste des personnes couvertes par la station numéro : " + stationNumber
 						+ " bien récupérée ");
 			}
 
@@ -63,8 +63,8 @@ public class PersonsInfosController {
 	 * @return - children by address with firstname, lastname, old
 	 *         and list of family members
 	 */
-	@GetMapping("/childAlert/{address}")
-	public ChildAlertDto GetChildrenByAddress(@PathVariable String address) {
+	@GetMapping("/childAlert")
+	public ChildAlertDto GetChildrenByAddress(@RequestParam String address) {
 		log.info("Requête : demande liste des enfants à l'adresse " + address);
 		ChildAlertDto childAlertDto = null;
 		try {
@@ -91,12 +91,12 @@ public class PersonsInfosController {
 	 * @return - list phones
 	 *         
 	 */
-	@GetMapping("/phoneAlert/{station}")
-	public PhoneAlertDto GetPhoneByStationNumber(@PathVariable int station) {
-		log.info("Requête : demande liste des téléphones pour la station numéro " + station);
+	@GetMapping("/phoneAlert")
+	public PhoneAlertDto GetPhoneByStationNumber(@RequestParam int firestation) {
+		log.info("Requête : demande liste des téléphones pour la station numéro " + firestation);
 		PhoneAlertDto phoneAlertDto = null;
 		try {
-			phoneAlertDto = personsInfosService.getListPhoneByStation(station);
+			phoneAlertDto = personsInfosService.getListPhoneByStation(firestation);
 
 			if (phoneAlertDto == null) {
 				log.info("Personne à cette station");
@@ -119,8 +119,8 @@ public class PersonsInfosController {
 	 * @return - list people with medical record
 	 *         
 	 */
-	@GetMapping("/fire/{address}")
-	public FireListDto GetPeopleByAddress(@PathVariable String address) {
+	@GetMapping("/fire")
+	public FireListDto GetPeopleByAddress(@RequestParam String address) {
 		log.info("Requête : demande liste des personnes à l'adresse " + address);
 		FireListDto fireListDto = null;
 		try {
@@ -175,8 +175,8 @@ public class PersonsInfosController {
 	 * @return - person info, name, address, old, email and medical record
 	 *         
 	 */
-	@GetMapping("/personInfo/{firstName}/{lastName}")
-	public PersonInfoDto GetPersonInfo(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
+	@GetMapping("/personInfo")
+	public PersonInfoDto GetPersonInfo(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
 		log.info("Get /personInfo/firstname/lasname called");
 		 PersonInfoDto personInfoDto = null;
 		try {
@@ -196,6 +196,33 @@ public class PersonsInfosController {
 		return personInfoDto;
 	}
 	
+	/**
+	 * Get community email
+	 * 
+	 * @param - city
+	 * @return - emails for all people in the city
+	 *         
+	 */
+	@GetMapping("/communityEmail")
+	public EmailListDto GetCommunityEmail(@RequestParam("city") String city) {
+		log.info("Get /communityEmail/city called");
+		EmailListDto emailListDto = null;
+		try {
+			emailListDto = personsInfosService.getCommunityEmail(city);
+
+			if (emailListDto == null) {
+				log.info("personne pour cette ville");
+			} else {
+				log.info("Requête ok, liste des mails bien récupéré ");
+			}
+
+		} catch (Exception e) {
+			log.error("erreur lors de la récupération des email, erreur : " + e);
+			e.printStackTrace();
+		}
+
+		return emailListDto;
+	}
 	
 
 }

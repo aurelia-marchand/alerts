@@ -3,6 +3,7 @@ package com.safetynet.alerts.service;
 import java.util.List;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
+import com.safetynet.alerts.dto.EmailListDto;
 import com.safetynet.alerts.dto.FireListDto;
 import com.safetynet.alerts.dto.FloodStationsDto;
 import com.safetynet.alerts.dto.PeopleByAddressDto;
@@ -23,4 +24,6 @@ public interface PersonsInfosServiceI {
 	public List<FloodStationsDto> getPeopleByListStation(List<Integer> stations);
 
 	public PersonInfoDto getPersonInfo(String firstName, String lastName);
+
+	public EmailListDto getCommunityEmail(String city);
 }

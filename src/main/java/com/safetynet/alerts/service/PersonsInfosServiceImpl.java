@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.safetynet.alerts.dao.PersonsInfosDaoI;
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.ChildrenByAddressDto;
+import com.safetynet.alerts.dto.EmailListDto;
 import com.safetynet.alerts.dto.FamilyMembersDto;
 import com.safetynet.alerts.dto.FireListDto;
 import com.safetynet.alerts.dto.FloodStationsDto;
@@ -350,5 +351,13 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		personInfoDto.setAllergies(medicalRecord.getAllergies());
 		
 		return personInfoDto;
+	}
+
+	@Override
+	public EmailListDto getCommunityEmail(String city) {
+		EmailListDto emails = new EmailListDto();
+		List<String> emailList = personsInfosDao.findEmailByCity(city);
+		emails.setEmails(emailList);
+		return emails;
 	}
 }

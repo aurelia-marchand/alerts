@@ -169,4 +169,20 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 		}
 		return null;
 	}
+
+	@Override
+	public List<String> findEmailByCity(String city) {
+		List<Person> persons = accessJson.getData().getPersons();
+		
+		List<String> emails = new ArrayList<>();
+		
+		for(Person person : persons) {
+			if(person.getCity().equalsIgnoreCase(city)) {
+				emails.add(person.getEmail());
+			}
+		}
+		
+		
+		return emails;
+	}
 }

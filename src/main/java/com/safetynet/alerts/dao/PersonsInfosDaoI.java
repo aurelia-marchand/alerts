@@ -27,4 +27,6 @@ public interface PersonsInfosDaoI {
 	public Person getPerson(String firstName, String lastName);
 
 	public MedicalRecord findMedicalRecordsByPerson(Person person);
+
+	public List<String> findEmailByCity(String city);
 }
