@@ -120,24 +120,53 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 		List<Person> persons = personsInfos.getPersons();
 		List<Person> personnes = new ArrayList<>();
 		for (int station : stationsList) {
-			
+
 			for (Firestation firestation : firestations) {
-				
+
 				if (firestation.getStation() == station) {
 					String address = firestation.getAddress();
 					;
 					for (Person person : persons) {
-						
+
 						if (person.getAddress().equalsIgnoreCase(address)) {
-							
+
 							personnes.add(person);
-							
+
 						}
 					}
 				}
 			}
 		}
-		
+
 		return personnes;
+	}
+
+	@Override
+	public Person getPerson(String firstName, String lastName) {
+		List<Person> persons = accessJson.getData().getPersons();
+		for (Person person : persons) {
+			if (person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName)) {
+				log.debug("dao renvoi : " + person);
+				return person;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public MedicalRecord findMedicalRecordsByPerson(Person personne) {
+		Person person = personne;
+		MedicalRecord medicalRecordPerson = new MedicalRecord();
+		List<MedicalRecord> medicalRecords = accessJson.getData().getMedicalrecords();
+		
+		for (MedicalRecord medicalRecord : medicalRecords) {
+			if (medicalRecord.getFirstName().equalsIgnoreCase(person.getFirstName())
+					&& medicalRecord.getLastName().equalsIgnoreCase(person.getLastName())) {
+				
+				medicalRecordPerson = medicalRecord;
+				return medicalRecordPerson;
+			}
+		}
+		return null;
 	}
 }

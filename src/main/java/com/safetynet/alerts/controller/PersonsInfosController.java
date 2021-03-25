@@ -14,6 +14,7 @@ import com.safetynet.alerts.dto.FireListDto;
 import com.safetynet.alerts.dto.FloodStationsDto;
 import com.safetynet.alerts.dto.PeopleByAddressDto;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
+import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.dto.PhoneAlertDto;
 import com.safetynet.alerts.service.PersonsInfosServiceI;
 
@@ -166,5 +167,35 @@ public class PersonsInfosController {
 
 		return floodStationsDto;
 	}
+	
+	/**
+	 * Get person info by this firstname and lastname
+	 * 
+	 * @param - firstname and lastname
+	 * @return - person info, name, address, old, email and medical record
+	 *         
+	 */
+	@GetMapping("/personInfo/{firstName}/{lastName}")
+	public PersonInfoDto GetPersonInfo(@PathVariable("firstName") String firstName, @PathVariable("lastName") String lastName) {
+		log.info("Get /personInfo/firstname/lasname called");
+		 PersonInfoDto personInfoDto = null;
+		try {
+			personInfoDto = personsInfosService.getPersonInfo(firstName, lastName);
+
+			if (personInfoDto == null) {
+				log.info("Personne à ce nom");
+			} else {
+				log.info("Requête ok, personne bien récupérée ");
+			}
+
+		} catch (Exception e) {
+			log.error("erreur lors de la récupération de la personne, erreur : " + e);
+			e.printStackTrace();
+		}
+
+		return personInfoDto;
+	}
+	
+	
 
 }

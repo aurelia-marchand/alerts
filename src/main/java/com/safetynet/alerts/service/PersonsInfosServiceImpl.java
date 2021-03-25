@@ -22,6 +22,7 @@ import com.safetynet.alerts.dto.PeopleByAddressDto;
 import com.safetynet.alerts.dto.PeopleCoveredDto;
 import com.safetynet.alerts.dto.PeopleFireDto;
 import com.safetynet.alerts.dto.PersonByAddressDto;
+import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.dto.PersonsByStationDto;
 import com.safetynet.alerts.dto.PhoneAlertDto;
 import com.safetynet.alerts.model.Firestation;
@@ -329,5 +330,25 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		}
 		floods.add(floodStationDto);
 		return floods;
+	}
+
+	@Override
+	public PersonInfoDto getPersonInfo(String firstName, String lastName) {
+		Person person = personsInfosDao.getPerson(firstName, lastName);
+		log.debug("person : " + person);
+		MedicalRecord medicalRecord = personsInfosDao.findMedicalRecordsByPerson(person);
+		log.debug("dossier med : " + medicalRecord);
+		PersonInfoDto personInfoDto = new PersonInfoDto();
+		int old = calculateAge(medicalRecord.getBirthdate());
+		log.debug("old : " + old);
+
+		ModelMapper modelMapper = new ModelMapper();
+		personInfoDto = modelMapper.map(person, PersonInfoDto.class);
+		//
+		personInfoDto.setOld(old);
+		personInfoDto.setMedications(medicalRecord.getMedications());
+		personInfoDto.setAllergies(medicalRecord.getAllergies());
+		
+		return personInfoDto;
 	}
 }

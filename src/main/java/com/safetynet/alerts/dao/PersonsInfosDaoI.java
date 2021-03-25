@@ -23,4 +23,8 @@ public interface PersonsInfosDaoI {
 	public Set<String> findAddressByStation(int station);
 
 	public List<Person> findPersonsByStation(List<Integer> stations);
+
+	public Person getPerson(String firstName, String lastName);
+
+	public MedicalRecord findMedicalRecordsByPerson(Person person);
 }
