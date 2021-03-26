@@ -8,7 +8,8 @@ import lombok.Data;
 
 @Data
 @Component
-public class EmailListDto {
+public class StationsPeopleByAddressDto {
 
-	List<String> emails;
+	String address;
+	List<PersonStationsDto> personsStationsDto;
 }

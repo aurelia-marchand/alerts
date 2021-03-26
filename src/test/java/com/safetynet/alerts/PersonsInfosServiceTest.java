@@ -18,8 +18,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.safetynet.alerts.dao.PersonsInfosDaoImpl;
-import com.safetynet.alerts.dto.PeopleCoveredDto;
-import com.safetynet.alerts.dto.PersonsByStationDto;
+import com.safetynet.alerts.dto.DistricDto;
+import com.safetynet.alerts.dto.DistrictPersonsDto;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.service.PersonsInfosServiceImpl;
 
@@ -36,10 +36,10 @@ class PersonsInfosServiceTest {
 	PersonsInfosServiceImpl personsInfosServiceImpl;
 	
 	@MockBean
-	PeopleCoveredDto peopleCoveredDto;
+	DistricDto peopleCoveredDto;
 	
 	@MockBean
-	PersonsByStationDto personsByStationDto;
+	DistrictPersonsDto personsByStationDto;
 	
 	List<MedicalRecord> medicalRecordList = new ArrayList<>();
 	
@@ -96,8 +96,8 @@ class PersonsInfosServiceTest {
 	@Disabled
 	@Test
 	void testGetListPersonsByStationNumber() {
-		PersonsByStationDto personsByStationDto = new PersonsByStationDto();
-		List<PersonsByStationDto> list = new ArrayList<>();
+		DistrictPersonsDto personsByStationDto = new DistrictPersonsDto();
+		List<DistrictPersonsDto> list = new ArrayList<>();
 		list.add(personsByStationDto);
 		
 		personsInfosServiceImpl.getListPersonsByStationNumber(2);

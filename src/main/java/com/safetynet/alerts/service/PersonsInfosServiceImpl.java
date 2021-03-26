@@ -13,19 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.alerts.dao.PersonsInfosDaoI;
+import com.safetynet.alerts.dto.AlertPhoneDto;
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.ChildrenByAddressDto;
-import com.safetynet.alerts.dto.EmailListDto;
-import com.safetynet.alerts.dto.FamilyMembersDto;
-import com.safetynet.alerts.dto.FireListDto;
-import com.safetynet.alerts.dto.FloodStationsDto;
-import com.safetynet.alerts.dto.PeopleByAddressDto;
-import com.safetynet.alerts.dto.PeopleCoveredDto;
-import com.safetynet.alerts.dto.PeopleFireDto;
-import com.safetynet.alerts.dto.PersonByAddressDto;
+import com.safetynet.alerts.dto.CommunityEmailDto;
+import com.safetynet.alerts.dto.DistricDto;
+import com.safetynet.alerts.dto.DistrictPersonsDto;
+import com.safetynet.alerts.dto.ChildrenFamilyDto;
+import com.safetynet.alerts.dto.StationsDto;
+import com.safetynet.alerts.dto.StationsPeopleByAddressDto;
+import com.safetynet.alerts.dto.PersonStationsDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
-import com.safetynet.alerts.dto.PersonsByStationDto;
-import com.safetynet.alerts.dto.PhoneAlertDto;
+import com.safetynet.alerts.dto.StreetPeopleDto;
+import com.safetynet.alerts.dto.StreetDto;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
@@ -42,12 +42,12 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 	@Autowired
 	PersonsInfosDaoI personsInfosDao;
 	@Autowired
-	PeopleCoveredDto peopleCoveredDto;
+	DistricDto districDto;
 	@Autowired
-	PersonsByStationDto personsByStationDto;
+	DistrictPersonsDto districtPersonsDto;
 
 	@Override
-	public PeopleCoveredDto getListPersonsByStationNumber(int station) {
+	public DistricDto getListPersonsByStationNumber(int station) {
 
 		// On récupère les personnes couvertes par la station via les méthodes de
 		// l'interface Dao
@@ -57,7 +57,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		List<Firestation> firestations = personsInfos.getFirestations();
 		List<Person> persons = personsInfos.getPersons();
 		log.debug("liste 1 avant boucle : size " + persons.size() + "personne" + persons);
-		List<PersonsByStationDto> liste = new ArrayList<>();
+		List<DistrictPersonsDto> liste = new ArrayList<>();
 		// Boucle pour récupérer l'adress de la station puis comparer avec adresse des
 		// personnes qu'on récupère si identique
 		for (Firestation firestation : firestations) {
@@ -67,8 +67,8 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 					if (person.getAddress().equalsIgnoreCase(address)) {
 						// Utilisation ModelMapper pour map Dto/entité
 						ModelMapper modelMapper = new ModelMapper();
-						personsByStationDto = modelMapper.map(person, PersonsByStationDto.class);
-						liste.add(personsByStationDto);
+						districtPersonsDto = modelMapper.map(person, DistrictPersonsDto.class);
+						liste.add(districtPersonsDto);
 					}
 				}
 			}
@@ -83,7 +83,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		// station
 		try {
 			for (MedicalRecord medicalRecord : medicalRecords) {
-				for (PersonsByStationDto personByStationDto : liste) {
+				for (DistrictPersonsDto personByStationDto : liste) {
 					if (personByStationDto.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
 							&& personByStationDto.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
 
@@ -97,11 +97,11 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 			e.printStackTrace();
 		}
 		// On Complète notre Dto avant de le renvoyer
-		peopleCoveredDto.setNumberOfAdults(calculateNumberOfAdults(listeMedicalRecord));
-		peopleCoveredDto.setNumberOfChildren(calculateNumberOfChildren(listeMedicalRecord));
-		peopleCoveredDto.setPersonsByStationDto(liste);
+		districDto.setNumberOfAdults(calculateNumberOfAdults(listeMedicalRecord));
+		districDto.setNumberOfChildren(calculateNumberOfChildren(listeMedicalRecord));
+		districDto.setDistrictPersonsDto(liste);
 
-		return peopleCoveredDto;
+		return districDto;
 	}
 
 	public static int calculateNumberOfChildren(List<MedicalRecord> listeMedicalRecord) {
@@ -157,8 +157,8 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 
 		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByPerson(personneByAddress);
 
-		List<FamilyMembersDto> familyMembersDto = new ArrayList<>();
-		FamilyMembersDto FamilyMember = new FamilyMembersDto();
+		List<ChildrenFamilyDto> familyMembersDto = new ArrayList<>();
+		ChildrenFamilyDto FamilyMember = new ChildrenFamilyDto();
 		ChildrenByAddressDto childrenByAddressDto = new ChildrenByAddressDto();
 		List<ChildrenByAddressDto> childrenByAddress = new ArrayList<>();
 		ChildAlertDto childAlert = new ChildAlertDto();
@@ -176,14 +176,14 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 						childrenByAddress.add(childrenByAddressDto);
 					} else {
 						ModelMapper modelMapper = new ModelMapper();
-						FamilyMember = modelMapper.map(person, FamilyMembersDto.class);
+						FamilyMember = modelMapper.map(person, ChildrenFamilyDto.class);
 						FamilyMember.setAge(age);
 						familyMembersDto.add(FamilyMember);
 					}
 				}
 			}
 			childAlert.setChildrenByAdress(childrenByAddress);
-			childAlert.setFamilyMembersDto(familyMembersDto);
+			childAlert.setChildrenFamilyDto(familyMembersDto);
 
 		}
 
@@ -191,14 +191,14 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 	}
 
 	@Override
-	public PhoneAlertDto getListPhoneByStation(int station) {
+	public AlertPhoneDto getListPhoneByStation(int station) {
 
 		PersonsInfos personsInfos = personsInfosDao.findPersonsByStationNumber(station);
 		List<Firestation> firestations = personsInfos.getFirestations();
 		List<Person> persons = personsInfos.getPersons();
 
 		List<String> phones = new ArrayList<>();
-		PhoneAlertDto phoneAlertDto = new PhoneAlertDto();
+		AlertPhoneDto phoneAlertDto = new AlertPhoneDto();
 
 		for (Firestation firestation : firestations) {
 			if (firestation.getStation() == station) {
@@ -218,17 +218,17 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 	}
 
 	@Override
-	public FireListDto getPeopleByAddress(String address) {
+	public StreetDto getPeopleByAddress(String address) {
 		List<Person> peopleByAddress = personsInfosDao.findPersonsByAddress(address);
 		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByPerson(peopleByAddress);
 		int station = personsInfosDao.getStationByAddress(address);
 
 		List<String> medications = new ArrayList<>();
 		List<String> allergies = new ArrayList<>();
-		PeopleFireDto peopleFireDto = new PeopleFireDto();
+		StreetPeopleDto peopleFireDto = new StreetPeopleDto();
 
-		List<PeopleFireDto> peoplesFireDto = new ArrayList<>();
-		FireListDto fireListDto = new FireListDto();
+		List<StreetPeopleDto> peoplesFireDto = new ArrayList<>();
+		StreetDto streetDto = new StreetDto();
 
 		for (Person personByAddress : peopleByAddress) {
 			for (MedicalRecord medicalRecord : medicalRecords) {
@@ -239,7 +239,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 					log.debug("allergies : " + allergies);
 
 					ModelMapper modelMapper = new ModelMapper();
-					peopleFireDto = modelMapper.map(personByAddress, PeopleFireDto.class);
+					peopleFireDto = modelMapper.map(personByAddress, StreetPeopleDto.class);
 					peopleFireDto.setAge(calculateAge(medicalRecord.getBirthdate()));
 					peopleFireDto.setMedications(medications);
 					peopleFireDto.setAllergies(allergies);
@@ -250,14 +250,14 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 			}
 		}
 
-		fireListDto.setPeopleFireDto(peoplesFireDto);
-		fireListDto.setStation(station);
+		streetDto.setStreetPeopleDto(peoplesFireDto);
+		streetDto.setStation(station);
 
-		return fireListDto;
+		return streetDto;
 	}
 
 	@Override
-	public List<FloodStationsDto> getPeopleByListStation(List<Integer> stationsList) {
+	public List<StationsDto> getPeopleByListStation(List<Integer> stationsList) {
 
 		List<Integer> stations = stationsList;
 
@@ -273,9 +273,9 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		List<String> allergies = new ArrayList<>();
 
 		// On crée une entité personne
-		PersonByAddressDto personByAddressDto = new PersonByAddressDto();
+		PersonStationsDto personByAddressDto = new PersonStationsDto();
 		// On prépare la liste pour stocker les personnes à afficher
-		List<PersonByAddressDto> peopleByAddress = new ArrayList<>();
+		List<PersonStationsDto> personsStationsDto = new ArrayList<>();
 
 		// On prepare un hashset pour stocker les adresses sans doublons.
 		Set<String> adresses = new HashSet<>();
@@ -290,7 +290,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 					// on intègre la personne, ses données médicales et son âge dans l'entité
 					// PersonByAddressDto
 					ModelMapper modelMapper = new ModelMapper();
-					personByAddressDto = modelMapper.map(person, PersonByAddressDto.class);
+					personByAddressDto = modelMapper.map(person, PersonStationsDto.class);
 					personByAddressDto.setAge(calculateAge(medicalRecord.getBirthdate()));
 					medications = medicalRecord.getMedications();
 					allergies = medicalRecord.getAllergies();
@@ -299,7 +299,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 					// log.debug("personByAddressDto : " + personByAddressDto);
 
 					// on ajoute cette personne à la liste des personnes
-					peopleByAddress.add(personByAddressDto);
+					personsStationsDto.add(personByAddressDto);
 
 				}
 			}
@@ -307,30 +307,30 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		}
 
 		// et la liste pour stocker les groupes
-		List<PeopleByAddressDto> peoplesByAddress = new ArrayList<>();
+		List<StationsPeopleByAddressDto> stationsPeopleByAddress = new ArrayList<>();
 
-		List<FloodStationsDto> floods = new ArrayList<>();
+		List<StationsDto> stationsDto = new ArrayList<>();
 
-		FloodStationsDto floodStationDto = new FloodStationsDto();
+		StationsDto stationDto = new StationsDto();
 
 		for (String adresse : adresses) {
-			List<PersonByAddressDto> people = new ArrayList<>();
+			List<PersonStationsDto> peopleStationsDto = new ArrayList<>();
 
-			for (PersonByAddressDto person : peopleByAddress) {
+			for (PersonStationsDto person : personsStationsDto) {
 				if (person.getAddress().equalsIgnoreCase(adresse)) {
-					people.add(person);
+					peopleStationsDto.add(person);
 				}
 			}
 			// On prépare l'entité groupe par adresse PeopleByAddressDto
-			PeopleByAddressDto peopleByAddressDto = new PeopleByAddressDto();
-			peopleByAddressDto.setAddress(adresse);
-			peopleByAddressDto.setPersonsByAddressDto(people);
-			peoplesByAddress.add(peopleByAddressDto);
+			StationsPeopleByAddressDto stationPeopleByAddress = new StationsPeopleByAddressDto();
+			stationPeopleByAddress.setAddress(adresse);
+			stationPeopleByAddress.setPersonsStationsDto(peopleStationsDto);
+			stationsPeopleByAddress.add(stationPeopleByAddress);
 
-			floodStationDto.setPeoplesByAddressDto(peoplesByAddress);
+			stationDto.setStationsPeopleByAddressDto(stationsPeopleByAddress);
 		}
-		floods.add(floodStationDto);
-		return floods;
+		stationsDto.add(stationDto);
+		return stationsDto;
 	}
 
 	@Override
@@ -354,8 +354,8 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 	}
 
 	@Override
-	public EmailListDto getCommunityEmail(String city) {
-		EmailListDto emails = new EmailListDto();
+	public CommunityEmailDto getCommunityEmail(String city) {
+		CommunityEmailDto emails = new CommunityEmailDto();
 		List<String> emailList = personsInfosDao.findEmailByCity(city);
 		emails.setEmails(emailList);
 		return emails;

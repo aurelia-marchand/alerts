@@ -8,13 +8,13 @@ import lombok.Data;
 
 @Data
 @Component
-public class PeopleCoveredDto {
+public class DistricDto {
 	
-	private List<PersonsByStationDto> personsByStationDto;
+	private List<DistrictPersonsDto> districtPersonsDto;
 
 	private int numberOfAdults;
 	private int numberOfChildren;
-	public PeopleCoveredDto() {
+	public DistricDto() {
 		
 	}
 	

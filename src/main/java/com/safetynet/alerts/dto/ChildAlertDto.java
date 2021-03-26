@@ -12,6 +12,6 @@ public class ChildAlertDto {
 
 	List<ChildrenByAddressDto> childrenByAdress;
 	
-	List<FamilyMembersDto> familyMembersDto;
+	List<ChildrenFamilyDto> childrenFamilyDto;
 	
 }

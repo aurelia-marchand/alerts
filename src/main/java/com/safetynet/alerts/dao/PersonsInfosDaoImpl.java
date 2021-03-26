@@ -8,7 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.safetynet.alerts.dto.PersonsByStationDto;
+import com.safetynet.alerts.dto.DistrictPersonsDto;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
@@ -25,7 +25,7 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 	@Autowired
 	AccessJsonI accessJson;
 	@Autowired
-	PersonsByStationDto personsByStationDto;
+	DistrictPersonsDto personsByStationDto;
 
 	@Override
 	public PersonsInfos findPersonsByStationNumber(int station) {
@@ -43,7 +43,7 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 	}
 
 	@Override
-	public List<MedicalRecord> findMedicalRecordsByPersons(List<PersonsByStationDto> personsByStationDto2) {
+	public List<MedicalRecord> findMedicalRecordsByPersons(List<DistrictPersonsDto> personsByStationDto2) {
 		personsInfos = accessJson.getData();
 		List<MedicalRecord> medicalRecords = personsInfos.getMedicalrecords();
 

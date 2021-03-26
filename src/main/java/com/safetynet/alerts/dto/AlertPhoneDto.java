@@ -8,11 +8,7 @@ import lombok.Data;
 
 @Data
 @Component
-public class PeopleFireDto {
+public class AlertPhoneDto {
 
-	String lastName;
-	String phone;
-	int age;
-	List<String> medications;
-	List<String> allergies;
+	List<String> phones;
 }

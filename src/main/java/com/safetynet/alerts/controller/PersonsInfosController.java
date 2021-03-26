@@ -5,17 +5,16 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.safetynet.alerts.dto.AlertPhoneDto;
 import com.safetynet.alerts.dto.ChildAlertDto;
-import com.safetynet.alerts.dto.EmailListDto;
-import com.safetynet.alerts.dto.FireListDto;
-import com.safetynet.alerts.dto.FloodStationsDto;
-import com.safetynet.alerts.dto.PeopleCoveredDto;
+import com.safetynet.alerts.dto.CommunityEmailDto;
+import com.safetynet.alerts.dto.DistricDto;
+import com.safetynet.alerts.dto.StationsDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
-import com.safetynet.alerts.dto.PhoneAlertDto;
+import com.safetynet.alerts.dto.StreetDto;
 import com.safetynet.alerts.service.PersonsInfosServiceI;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +34,9 @@ public class PersonsInfosController {
 	 *         the number of adults and children
 	 */
 	@GetMapping("/firestation")
-	public PeopleCoveredDto GetPersonsByStation(@RequestParam int stationNumber) {
+	public DistricDto GetPersonsByStation(@RequestParam int stationNumber) {
 		log.info("Requête : demande liste des personnes couvertes par la station numéro " + stationNumber);
-		PeopleCoveredDto peopleCoverdeDto = null;
+		DistricDto peopleCoverdeDto = null;
 		try {
 			peopleCoverdeDto = personsInfosService.getListPersonsByStationNumber(stationNumber);
 
@@ -55,13 +54,13 @@ public class PersonsInfosController {
 
 		return peopleCoverdeDto;
 	}
-	
+
 	/**
 	 * Get list children by address and family members
 	 * 
 	 * @param - address
-	 * @return - children by address with firstname, lastname, old
-	 *         and list of family members
+	 * @return - children by address with firstname, lastname, old and list of
+	 *         family members
 	 */
 	@GetMapping("/childAlert")
 	public ChildAlertDto GetChildrenByAddress(@RequestParam String address) {
@@ -83,18 +82,18 @@ public class PersonsInfosController {
 
 		return childAlertDto;
 	}
-	
+
 	/**
 	 * Get phone people covered by station number
 	 * 
 	 * @param - station number
 	 * @return - list phones
-	 *         
+	 * 
 	 */
 	@GetMapping("/phoneAlert")
-	public PhoneAlertDto GetPhoneByStationNumber(@RequestParam int firestation) {
+	public AlertPhoneDto GetPhoneByStationNumber(@RequestParam int firestation) {
 		log.info("Requête : demande liste des téléphones pour la station numéro " + firestation);
-		PhoneAlertDto phoneAlertDto = null;
+		AlertPhoneDto phoneAlertDto = null;
 		try {
 			phoneAlertDto = personsInfosService.getListPhoneByStation(firestation);
 
@@ -111,18 +110,18 @@ public class PersonsInfosController {
 
 		return phoneAlertDto;
 	}
-	
+
 	/**
 	 * Get list People by address with medical record and station number
 	 * 
 	 * @param - address
 	 * @return - list people with medical record
-	 *         
+	 * 
 	 */
 	@GetMapping("/fire")
-	public FireListDto GetPeopleByAddress(@RequestParam String address) {
+	public StreetDto GetPeopleByAddress(@RequestParam String address) {
 		log.info("Requête : demande liste des personnes à l'adresse " + address);
-		FireListDto fireListDto = null;
+		StreetDto fireListDto = null;
 		try {
 			fireListDto = personsInfosService.getPeopleByAddress(address);
 
@@ -139,18 +138,19 @@ public class PersonsInfosController {
 
 		return fireListDto;
 	}
-	
+
 	/**
-	 * Get list People by stations number list with medical record and group by address
+	 * Get list People by stations number list with medical record and group by
+	 * address
 	 * 
 	 * @param - list station number
 	 * @return - list people with medical record group by address
-	 *         
+	 * 
 	 */
 	@GetMapping("/flood/stations")
-	public List<FloodStationsDto> GetPeopleByStation(@RequestParam List<Integer> stations) {
+	public List<StationsDto> GetPeopleByStation(@RequestParam List<Integer> stations) {
 		log.info("Requête : demande liste des personnes pour les stations " + stations);
-		 List<FloodStationsDto> floodStationsDto  = new ArrayList<>();
+		List<StationsDto> floodStationsDto = new ArrayList<>();
 		try {
 			floodStationsDto = personsInfosService.getPeopleByListStation(stations);
 
@@ -167,18 +167,19 @@ public class PersonsInfosController {
 
 		return floodStationsDto;
 	}
-	
+
 	/**
 	 * Get person info by this firstname and lastname
 	 * 
 	 * @param - firstname and lastname
 	 * @return - person info, name, address, old, email and medical record
-	 *         
+	 * 
 	 */
 	@GetMapping("/personInfo")
-	public PersonInfoDto GetPersonInfo(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
+	public PersonInfoDto GetPersonInfo(@RequestParam("firstName") String firstName,
+			@RequestParam("lastName") String lastName) {
 		log.info("Get /personInfo/firstname/lasname called");
-		 PersonInfoDto personInfoDto = null;
+		PersonInfoDto personInfoDto = null;
 		try {
 			personInfoDto = personsInfosService.getPersonInfo(firstName, lastName);
 
@@ -195,18 +196,18 @@ public class PersonsInfosController {
 
 		return personInfoDto;
 	}
-	
+
 	/**
 	 * Get community email
 	 * 
 	 * @param - city
 	 * @return - emails for all people in the city
-	 *         
+	 * 
 	 */
 	@GetMapping("/communityEmail")
-	public EmailListDto GetCommunityEmail(@RequestParam("city") String city) {
+	public CommunityEmailDto GetCommunityEmail(@RequestParam("city") String city) {
 		log.info("Get /communityEmail/city called");
-		EmailListDto emailListDto = null;
+		CommunityEmailDto emailListDto = null;
 		try {
 			emailListDto = personsInfosService.getCommunityEmail(city);
 
@@ -223,6 +224,5 @@ public class PersonsInfosController {
 
 		return emailListDto;
 	}
-	
 
 }

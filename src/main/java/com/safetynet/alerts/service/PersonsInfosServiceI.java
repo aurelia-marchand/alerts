@@ -2,28 +2,27 @@ package com.safetynet.alerts.service;
 
 import java.util.List;
 
+import com.safetynet.alerts.dto.AlertPhoneDto;
 import com.safetynet.alerts.dto.ChildAlertDto;
-import com.safetynet.alerts.dto.EmailListDto;
-import com.safetynet.alerts.dto.FireListDto;
-import com.safetynet.alerts.dto.FloodStationsDto;
-import com.safetynet.alerts.dto.PeopleByAddressDto;
-import com.safetynet.alerts.dto.PeopleCoveredDto;
+import com.safetynet.alerts.dto.CommunityEmailDto;
+import com.safetynet.alerts.dto.DistricDto;
+import com.safetynet.alerts.dto.StationsDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
-import com.safetynet.alerts.dto.PhoneAlertDto;
+import com.safetynet.alerts.dto.StreetDto;
 
 public interface PersonsInfosServiceI {
 
-	public PeopleCoveredDto getListPersonsByStationNumber(int station);
+	public DistricDto getListPersonsByStationNumber(int station);
 
 	public ChildAlertDto getListChildrenByAddress(String address);
 
-	public PhoneAlertDto getListPhoneByStation(int station);
+	public AlertPhoneDto getListPhoneByStation(int station);
 
-	public FireListDto getPeopleByAddress(String address);
+	public StreetDto getPeopleByAddress(String address);
 
-	public List<FloodStationsDto> getPeopleByListStation(List<Integer> stations);
+	public List<StationsDto> getPeopleByListStation(List<Integer> stations);
 
 	public PersonInfoDto getPersonInfo(String firstName, String lastName);
 
-	public EmailListDto getCommunityEmail(String city);
+	public CommunityEmailDto getCommunityEmail(String city);
 }
