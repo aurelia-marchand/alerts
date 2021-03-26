@@ -38,6 +38,8 @@ public class PersonDaoImpl implements PersonDaoI {
 			if (person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName)) {
 				log.debug("dao renvoi : "+ person);
 				return person;
+			} else {
+				return null;
 			}
 		}
 		return null;

@@ -45,7 +45,7 @@ public class PersonServiceImpl implements PersonServiceI{
 			log.error("Personne déjà existante");
 		}
 		
-		return null;
+		return person;
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class PersonServiceImpl implements PersonServiceI{
 		}
 		
 		personDao.putPerson(person);		
-		return null;
+		return person;
 	}
 
 	@Override

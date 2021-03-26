@@ -17,7 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alerts.controller.FirestationController;
@@ -69,16 +68,16 @@ class FirestationControllerTest {
 		when(firestationService.getFirestation("14 place de la halle")).thenReturn(firestation2);
 		when(firestationService.putFirestation(firestation2)).thenReturn(firestation2);
 
-		mockMvc.perform(put("/firestation/14 place de la halle").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(put("/firestation?address=14 place de la halle").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(firestation2))).andExpect(status().isCreated());
 
-		// verify(firestationService).putFirestation(firestation2);
+		verify(firestationService).putFirestation(firestation2);
 	}
 
 	@Test
 	void testDeleteFirestation() throws Exception {
 		when(firestationService.getFirestation("14 place de la halle")).thenReturn(firestation2);
-		mockMvc.perform(delete("/firestation/14 place de la halle")).andExpect(status().isOk());
+		mockMvc.perform(delete("/firestation?address=14 place de la halle")).andExpect(status().isOk());
 
 		verify(firestationService).deleteFirestation("14 place de la halle");
 	}

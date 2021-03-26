@@ -15,11 +15,11 @@ public class Person {
 	private String address;
 	
 	private String city;
-
+	
 	private int zip;
 
 	private String phone;
-
+	
 	private String email;
 
 	public Person(String firstName, String lastName, String address, String city, int zip, String phone, String email) {
