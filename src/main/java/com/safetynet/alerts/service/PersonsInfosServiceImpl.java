@@ -16,16 +16,16 @@ import com.safetynet.alerts.dao.PersonsInfosDaoI;
 import com.safetynet.alerts.dto.AlertPhoneDto;
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.ChildrenByAddressDto;
-import com.safetynet.alerts.dto.CommunityEmailDto;
-import com.safetynet.alerts.dto.DistricDto;
-import com.safetynet.alerts.dto.DistrictPersonsDto;
 import com.safetynet.alerts.dto.ChildrenFamilyDto;
+import com.safetynet.alerts.dto.CommunityEmailDto;
+import com.safetynet.alerts.dto.DistrictDto;
+import com.safetynet.alerts.dto.DistrictPersonsDto;
+import com.safetynet.alerts.dto.PersonInfoDto;
+import com.safetynet.alerts.dto.PersonStationsDto;
 import com.safetynet.alerts.dto.StationsDto;
 import com.safetynet.alerts.dto.StationsPeopleByAddressDto;
-import com.safetynet.alerts.dto.PersonStationsDto;
-import com.safetynet.alerts.dto.PersonInfoDto;
-import com.safetynet.alerts.dto.StreetPeopleDto;
 import com.safetynet.alerts.dto.StreetDto;
+import com.safetynet.alerts.dto.StreetPeopleDto;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
@@ -42,12 +42,12 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 	@Autowired
 	PersonsInfosDaoI personsInfosDao;
 	@Autowired
-	DistricDto districDto;
+	DistrictDto districDto;
 	@Autowired
 	DistrictPersonsDto districtPersonsDto;
 
 	@Override
-	public DistricDto getListPersonsByStationNumber(int station) {
+	public DistrictDto getListPersonsByStationNumber(int station) {
 
 		// On récupère les personnes couvertes par la station via les méthodes de
 		// l'interface Dao
@@ -61,9 +61,12 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		// Boucle pour récupérer l'adress de la station puis comparer avec adresse des
 		// personnes qu'on récupère si identique
 		for (Firestation firestation : firestations) {
+			log.debug("firestation n " + firestation);
 			if (firestation.getStation() == station) {
 				String address = firestation.getAddress();
 				for (Person person : persons) {
+					log.debug("person n " + person);
+
 					if (person.getAddress().equalsIgnoreCase(address)) {
 						// Utilisation ModelMapper pour map Dto/entité
 						ModelMapper modelMapper = new ModelMapper();
@@ -186,7 +189,10 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 			childAlert.setChildrenFamilyDto(familyMembersDto);
 
 		}
-
+		
+		if (childAlert.getChildrenByAdress() == null && childAlert.getChildrenFamilyDto() == null) {
+			childAlert = null;
+		}
 		return childAlert;
 	}
 
@@ -214,6 +220,12 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 
 		phoneAlertDto.setPhones(phones);
 		log.debug("phoneAlertDto" + phoneAlertDto);
+		
+		if (phones.size() == 0) {
+			phoneAlertDto = null;
+			log.debug("phones.size : "+ phones.size());
+		}
+		
 		return phoneAlertDto;
 	}
 
@@ -252,6 +264,10 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 
 		streetDto.setStreetPeopleDto(peoplesFireDto);
 		streetDto.setStation(station);
+		
+		if (streetDto.getStreetPeopleDto() == null && streetDto.getStation() == 0) {
+			streetDto = null;
+		}
 
 		return streetDto;
 	}
@@ -330,6 +346,11 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 			stationDto.setStationsPeopleByAddressDto(stationsPeopleByAddress);
 		}
 		stationsDto.add(stationDto);
+		
+		if(persons.size() == 0) {
+			stationsDto = null;
+		}
+		
 		return stationsDto;
 	}
 
@@ -337,20 +358,24 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 	public PersonInfoDto getPersonInfo(String firstName, String lastName) {
 		Person person = personsInfosDao.getPerson(firstName, lastName);
 		log.debug("person : " + person);
-		MedicalRecord medicalRecord = personsInfosDao.findMedicalRecordsByPerson(person);
-		log.debug("dossier med : " + medicalRecord);
-		PersonInfoDto personInfoDto = new PersonInfoDto();
-		int old = calculateAge(medicalRecord.getBirthdate());
-		log.debug("old : " + old);
+		if(person != null) {
+			MedicalRecord medicalRecord = personsInfosDao.findMedicalRecordsByPerson(person);
+			log.debug("dossier med : " + medicalRecord);
+			
+			PersonInfoDto personInfoDto = new PersonInfoDto();
+			int old = calculateAge(medicalRecord.getBirthdate());
+			log.debug("old : " + old);
 
-		ModelMapper modelMapper = new ModelMapper();
-		personInfoDto = modelMapper.map(person, PersonInfoDto.class);
-		//
-		personInfoDto.setOld(old);
-		personInfoDto.setMedications(medicalRecord.getMedications());
-		personInfoDto.setAllergies(medicalRecord.getAllergies());
-		
-		return personInfoDto;
+			ModelMapper modelMapper = new ModelMapper();
+			personInfoDto = modelMapper.map(person, PersonInfoDto.class);
+			//
+			personInfoDto.setOld(old);
+			personInfoDto.setMedications(medicalRecord.getMedications());
+			personInfoDto.setAllergies(medicalRecord.getAllergies());
+			return personInfoDto;
+		}
+
+		return null;
 	}
 
 	@Override
@@ -358,6 +383,10 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		CommunityEmailDto emails = new CommunityEmailDto();
 		List<String> emailList = personsInfosDao.findEmailByCity(city);
 		emails.setEmails(emailList);
+		
+		if (emailList.size() == 0) {
+			emails = null;
+		}
 		return emails;
 	}
 }

@@ -18,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.safetynet.alerts.dao.PersonsInfosDaoImpl;
-import com.safetynet.alerts.dto.DistricDto;
+import com.safetynet.alerts.dto.DistrictDto;
 import com.safetynet.alerts.dto.DistrictPersonsDto;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.service.PersonsInfosServiceImpl;
@@ -36,7 +36,7 @@ class PersonsInfosServiceTest {
 	PersonsInfosServiceImpl personsInfosServiceImpl;
 	
 	@MockBean
-	DistricDto peopleCoveredDto;
+	DistrictDto peopleCoveredDto;
 	
 	@MockBean
 	DistrictPersonsDto personsByStationDto;

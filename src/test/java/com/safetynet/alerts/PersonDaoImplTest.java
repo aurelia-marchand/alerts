@@ -18,7 +18,6 @@ import com.safetynet.alerts.dao.AccessJsonImpl;
 import com.safetynet.alerts.dao.PersonDaoImpl;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.model.PersonsInfos;
-import com.safetynet.alerts.service.PersonsInfosServiceImpl;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 

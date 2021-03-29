@@ -39,6 +39,7 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 		personsInfos.setFirestations(firestations);
 		personsInfos.setPersons(persons);
 
+		
 		return personsInfos;
 	}
 

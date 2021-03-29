@@ -13,15 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.jparams.verifier.tostring.NameStyle;
-import com.jparams.verifier.tostring.ToStringVerifier;
 import com.safetynet.alerts.dao.PersonDaoImpl;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.model.PersonsInfos;
 import com.safetynet.alerts.service.PersonServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.jqno.equalsverifier.EqualsVerifier;
 
 @Slf4j
 //@RunWith(SpringRunner.class)
