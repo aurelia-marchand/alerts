@@ -54,7 +54,9 @@ class PersonControllerTest {
 
 	@Test
 	void testDeletPerson() throws Exception {
+		//ARRANGE
 		when(personService.getPerson("Tessa", "Carman")).thenReturn(personTest3);
+		//ACT AND ASSERT
 		mockMvc.perform(delete("/person?firstName=Tessa&lastName=Carman")).andExpect(status().isOk());
 
 		verify(personService).deletePerson("Tessa", "Carman");
@@ -62,9 +64,10 @@ class PersonControllerTest {
 
 	@Test
 	void testPutPerson() throws Exception {
+		//ARRANGE
 		when(personService.getPerson("Jonanathan", "Marrack")).thenReturn(personTest2);
 		when(personService.putPerson(personTest2)).thenReturn(personTest2);
-
+		//ACT AND ASSERT
 		mockMvc.perform(put("/person?firstName=Jonanathan&lastName=Marrack").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(personTest2))).andExpect(status().isCreated());
 
@@ -72,9 +75,10 @@ class PersonControllerTest {
 	
 	@Test
 	void testPostPerson() throws Exception {
+		//ARRANGE
 		when(personService.getPerson("aurelia", "marchand")).thenReturn(null);
 		when(personService.postPerson(personTest4)).thenReturn(personTest4);
-
+		//ACT AND ASSERT
 		mockMvc.perform(post("/person?firstName=aurelia&lastName=marchand").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(personTest4))).andExpect(status().isCreated());
 

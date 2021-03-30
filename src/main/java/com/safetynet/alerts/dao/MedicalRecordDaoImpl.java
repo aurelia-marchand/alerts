@@ -31,7 +31,7 @@ public class MedicalRecordDaoImpl implements MedicalRecordDaoI {
 	}
 
 	@Override
-	public MedicalRecord getMedicalRecord(String firstName, String lastName) {
+	public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
 		List<MedicalRecord> medicalRecords = accessJson.getData().getMedicalrecords();
 		for (MedicalRecord medicalRecord : medicalRecords) {
 			if (medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName)) {
@@ -43,7 +43,7 @@ public class MedicalRecordDaoImpl implements MedicalRecordDaoI {
 	}
 
 	@Override
-	public MedicalRecord deleteMedicalRecord(String firstName, String lastName) {
+	public MedicalRecord deleteMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
 		PersonsInfos personsInfos = accessJson.getData();
 		List<MedicalRecord> medicalRecords = findAllMedicalRecords();
 		MedicalRecord medicalRecordToDelete = null;
@@ -63,7 +63,7 @@ public class MedicalRecordDaoImpl implements MedicalRecordDaoI {
 	}
 
 	@Override
-	public MedicalRecord putMedicalRecord(MedicalRecord medicalRecordToPut) {
+	public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecordToPut) {
 		PersonsInfos personsInfos = accessJson.getData();
 		List<MedicalRecord> medicalRecords = findAllMedicalRecords();
 		MedicalRecord medicalRecordToUpdate = medicalRecordToPut;
@@ -78,11 +78,11 @@ public class MedicalRecordDaoImpl implements MedicalRecordDaoI {
 		medicalRecords.set(index, medicalRecordToPut);
 	personsInfos.setMedicalrecords(medicalRecords);
 	accessJson.writeData(personsInfos);
-		return null;
+		return medicalRecordToPut;
 	}
 
 	@Override
-	public MedicalRecord postMedicalRecord(MedicalRecord medicalRecordToPost) {
+	public MedicalRecord saveMedicalRecord(MedicalRecord medicalRecordToPost) {
 		PersonsInfos personsInfos = accessJson.getData();
 		List<MedicalRecord> medicalRecords = findAllMedicalRecords();
 		MedicalRecord newMedicalRecord = medicalRecordToPost;
@@ -92,7 +92,7 @@ public class MedicalRecordDaoImpl implements MedicalRecordDaoI {
 
 		accessJson.writeData(personsInfos);
 
-		return null;
+		return newMedicalRecord;
 	}
 
 }

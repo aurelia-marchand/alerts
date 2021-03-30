@@ -19,7 +19,7 @@ import com.safetynet.alerts.dto.ChildrenByAddressDto;
 import com.safetynet.alerts.dto.ChildrenFamilyDto;
 import com.safetynet.alerts.dto.CommunityEmailDto;
 import com.safetynet.alerts.dto.DistrictDto;
-import com.safetynet.alerts.dto.DistrictPersonsDto;
+import com.safetynet.alerts.dto.DistrictPeopleDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.dto.PersonStationsDto;
 import com.safetynet.alerts.dto.StationsDto;
@@ -41,131 +41,57 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 
 	@Autowired
 	PersonsInfosDaoI personsInfosDao;
-	@Autowired
-	DistrictDto districDto;
-	@Autowired
-	DistrictPersonsDto districtPersonsDto;
+	
 
 	@Override
 	public DistrictDto getListPersonsByStationNumber(int station) {
 
-		// On récupère les personnes couvertes par la station via les méthodes de
-		// l'interface Dao
+		
+		
+		// Récupération des personnes couvertes par la station
+		List<Person> persons = personsInfosDao.findPersonsByStationNumber(station);
+		
 
-		PersonsInfos personsInfos = personsInfosDao.findPersonsByStationNumber(station);
+		// Préparation de la liste et des entités pour stocker les personnes avec uniquement les
+		// valeurs qu'on veut renvoyer
+		List<DistrictPeopleDto> listePeopleDto = new ArrayList<>();
+		DistrictDto districtDto= new DistrictDto();
+		DistrictPeopleDto districtPersonsDto = new DistrictPeopleDto();
 
-		List<Firestation> firestations = personsInfos.getFirestations();
-		List<Person> persons = personsInfos.getPersons();
-		log.debug("liste 1 avant boucle : size " + persons.size() + "personne" + persons);
-		List<DistrictPersonsDto> liste = new ArrayList<>();
-		// Boucle pour récupérer l'adress de la station puis comparer avec adresse des
-		// personnes qu'on récupère si identique
-		for (Firestation firestation : firestations) {
-			log.debug("firestation n " + firestation);
-			if (firestation.getStation() == station) {
-				String address = firestation.getAddress();
-				for (Person person : persons) {
-					log.debug("person n " + person);
-
-					if (person.getAddress().equalsIgnoreCase(address)) {
-						// Utilisation ModelMapper pour map Dto/entité
-						ModelMapper modelMapper = new ModelMapper();
-						districtPersonsDto = modelMapper.map(person, DistrictPersonsDto.class);
-						liste.add(districtPersonsDto);
-					}
-				}
-			}
+		for (Person person : persons) {
+			ModelMapper modelMapper = new ModelMapper();
+			districtPersonsDto = modelMapper.map(person, DistrictPeopleDto.class);
+			listePeopleDto.add(districtPersonsDto);
 		}
-		log.debug("liste 2 après boucle ; size " + persons.size() + "personne :" + liste);
-		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByPersons(liste);
 
-		// On initialise une liste pour pouvoir y stocker nos résultats
-		List<MedicalRecord> listeMedicalRecord = new ArrayList<>();
+		// Récupération des données médicales des personnes sur notre liste persons
+		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByListPerson(persons);
 
-		// Boucle pour récupérer les données médicales des personnes couvertes par la
-		// station
-		try {
-			for (MedicalRecord medicalRecord : medicalRecords) {
-				for (DistrictPersonsDto personByStationDto : liste) {
-					if (personByStationDto.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
-							&& personByStationDto.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
-
-						listeMedicalRecord.add(medicalRecord);
-					}
-				}
-			}
-			log.debug("Récupération des données médicales pour calcul de l'âge");
-		} catch (Exception e) {
-			log.error("erreur lors de la récupération des informations médicales");
-			e.printStackTrace();
-		}
 		// On Complète notre Dto avant de le renvoyer
-		districDto.setNumberOfAdults(calculateNumberOfAdults(listeMedicalRecord));
-		districDto.setNumberOfChildren(calculateNumberOfChildren(listeMedicalRecord));
-		districDto.setDistrictPersonsDto(liste);
+		districtDto.setNumberOfAdults(calculateNumberOfAdults(medicalRecords));
+		log.debug("Calcul du nombre d'adultes : " + districtDto.getNumberOfAdults());
+		districtDto.setNumberOfChildren(calculateNumberOfChildren(medicalRecords));
+		log.debug("Calcul du nombre d'enfants : " + districtDto.getNumberOfChildren());
+		districtDto.setDistrictPersonsDto(listePeopleDto);
 
-		return districDto;
-	}
-
-	public static int calculateNumberOfChildren(List<MedicalRecord> listeMedicalRecord) {
-		Integer numberOfChildren = 0;
-		List<MedicalRecord> listeMedicalRecords = listeMedicalRecord;
-		try {
-			for (MedicalRecord medicalRecord : listeMedicalRecords) {
-				int age = calculateAge(medicalRecord.getBirthdate());
-				if (age <= 18) {
-					numberOfChildren++;
-				}
-			}
-			log.debug("calcul du nombre d'enfants en cours...");
-		} catch (Exception e) {
-			log.error("erreur lors du calcul du nombre d'enfants");
-			e.printStackTrace();
-		}
-		return numberOfChildren;
-	}
-
-	public static int calculateNumberOfAdults(List<MedicalRecord> listeMedicalRecord) {
-		Integer numberOfAdults = 0;
-		List<MedicalRecord> listeMedicalRecords = listeMedicalRecord;
-		try {
-			for (MedicalRecord medicalRecord : listeMedicalRecords) {
-				int age = calculateAge(medicalRecord.getBirthdate());
-				if (age > 18) {
-					numberOfAdults++;
-				}
-			}
-			log.debug("calcul du nombre d'adultes en cours...");
-		} catch (Exception e) {
-			log.error("erreur lors du calcul du nombre d'adultes");
-			e.printStackTrace();
-		}
-		return numberOfAdults;
-	}
-
-	public static int calculateAge(String birthdate) {
-
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-
-		LocalDate date = LocalDate.parse(birthdate, formatter);
-
-		LocalDate birthDate = date;
-		LocalDate currentDate = LocalDate.now();
-		return Period.between(birthDate, currentDate).getYears();
+		return districtDto;
 	}
 
 	@Override
 	public ChildAlertDto getListChildrenByAddress(String address) {
+		// Récupération données personnes et médicales
 		List<Person> personneByAddress = personsInfosDao.findPersonsByAddress(address);
+		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByListPerson(personneByAddress);
 
-		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByPerson(personneByAddress);
-
+		// Préparation des entités de stockage à renvoyer
 		List<ChildrenFamilyDto> familyMembersDto = new ArrayList<>();
 		ChildrenFamilyDto FamilyMember = new ChildrenFamilyDto();
 		ChildrenByAddressDto childrenByAddressDto = new ChildrenByAddressDto();
 		List<ChildrenByAddressDto> childrenByAddress = new ArrayList<>();
 		ChildAlertDto childAlert = new ChildAlertDto();
 
+		// Boucle pour lier personnes et leurs dossiers medicaux, calculer leurs âges et les
+		// placer soit comme enfant soit comme membres de la famille
 		for (Person person : personneByAddress) {
 			for (MedicalRecord medicalRecord : medicalRecords) {
 				if (medicalRecord.getFirstName().equalsIgnoreCase(person.getFirstName())
@@ -187,9 +113,8 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 			}
 			childAlert.setChildrenByAdress(childrenByAddress);
 			childAlert.setChildrenFamilyDto(familyMembersDto);
-
 		}
-		
+
 		if (childAlert.getChildrenByAdress() == null && childAlert.getChildrenFamilyDto() == null) {
 			childAlert = null;
 		}
@@ -198,57 +123,44 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 
 	@Override
 	public AlertPhoneDto getListPhoneByStation(int station) {
-
-		PersonsInfos personsInfos = personsInfosDao.findPersonsByStationNumber(station);
-		List<Firestation> firestations = personsInfos.getFirestations();
-		List<Person> persons = personsInfos.getPersons();
-
-		List<String> phones = new ArrayList<>();
+		// Récupération des numéros de téléphones par station
+		List<String> phones = personsInfosDao.findPhoneByStationNumber(station);
+		
+		// Préparation entité de stockage et tranfert
 		AlertPhoneDto phoneAlertDto = new AlertPhoneDto();
-
-		for (Firestation firestation : firestations) {
-			if (firestation.getStation() == station) {
-				String address = firestation.getAddress();
-				for (Person person : persons) {
-					if (person.getAddress().equalsIgnoreCase(address)) {
-						String phone = person.getPhone();
-						phones.add(phone);
-					}
-				}
-			}
-		}
 
 		phoneAlertDto.setPhones(phones);
 		log.debug("phoneAlertDto" + phoneAlertDto);
-		
+
 		if (phones.size() == 0) {
 			phoneAlertDto = null;
-			log.debug("phones.size : "+ phones.size());
 		}
-		
+
 		return phoneAlertDto;
 	}
 
 	@Override
 	public StreetDto getPeopleByAddress(String address) {
+		// Récupération des personnes à l'adresse et de leurs dossiers médicaux
 		List<Person> peopleByAddress = personsInfosDao.findPersonsByAddress(address);
-		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByPerson(peopleByAddress);
-		int station = personsInfosDao.getStationByAddress(address);
+		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByListPerson(peopleByAddress);
+		//Récupération du numéro de la station
+		int station = personsInfosDao.findStationByAddress(address);
 
+		// Préparation entités de transfert
 		List<String> medications = new ArrayList<>();
 		List<String> allergies = new ArrayList<>();
 		StreetPeopleDto peopleFireDto = new StreetPeopleDto();
-
 		List<StreetPeopleDto> peoplesFireDto = new ArrayList<>();
 		StreetDto streetDto = new StreetDto();
 
+		// Boucle association personnes/dossiers médicaux
 		for (Person personByAddress : peopleByAddress) {
 			for (MedicalRecord medicalRecord : medicalRecords) {
 				if (personByAddress.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
 						&& personByAddress.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
 					medications = medicalRecord.getMedications();
 					allergies = medicalRecord.getAllergies();
-					log.debug("allergies : " + allergies);
 
 					ModelMapper modelMapper = new ModelMapper();
 					peopleFireDto = modelMapper.map(personByAddress, StreetPeopleDto.class);
@@ -257,14 +169,12 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 					peopleFireDto.setAllergies(allergies);
 
 					peoplesFireDto.add(peopleFireDto);
-
 				}
 			}
 		}
-
 		streetDto.setStreetPeopleDto(peoplesFireDto);
 		streetDto.setStation(station);
-		
+
 		if (streetDto.getStreetPeopleDto() == null && streetDto.getStation() == 0) {
 			streetDto = null;
 		}
@@ -280,8 +190,8 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		// On récupère les personnes des stations
 		List<Person> persons = personsInfosDao.findPersonsByStation(stations);
 
-		// On récupère les dossiers médicales des personnes concernées
-		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByPerson(persons);
+		// On récupère les dossiers médicaux des personnes concernées
+		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByListPerson(persons);
 
 		// On prépare deux listes pour stocker les antécédents médicaux (medicaments,
 		// posologie et allergies)
@@ -296,7 +206,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		// On prepare un hashset pour stocker les adresses sans doublons.
 		Set<String> adresses = new HashSet<>();
 
-		// Boucle pour faire correspondre les personnes et leur dossier médical
+		// Boucle pour faire correspondre les personnes et leurs dossiers
 		for (Person person : persons) {
 			for (MedicalRecord medicalRecord : medicalRecords) {
 				if (person.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
@@ -312,26 +222,19 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 					allergies = medicalRecord.getAllergies();
 					personByAddressDto.setMedications(medications);
 					personByAddressDto.setAllergies(allergies);
-					// log.debug("personByAddressDto : " + personByAddressDto);
 
 					// on ajoute cette personne à la liste des personnes
 					personsStationsDto.add(personByAddressDto);
-
 				}
 			}
-
 		}
-
 		// et la liste pour stocker les groupes
 		List<StationsPeopleByAddressDto> stationsPeopleByAddress = new ArrayList<>();
-
 		List<StationsDto> stationsDto = new ArrayList<>();
-
 		StationsDto stationDto = new StationsDto();
 
 		for (String adresse : adresses) {
 			List<PersonStationsDto> peopleStationsDto = new ArrayList<>();
-
 			for (PersonStationsDto person : personsStationsDto) {
 				if (person.getAddress().equalsIgnoreCase(adresse)) {
 					peopleStationsDto.add(person);
@@ -346,35 +249,33 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 			stationDto.setStationsPeopleByAddressDto(stationsPeopleByAddress);
 		}
 		stationsDto.add(stationDto);
-		
-		if(persons.size() == 0) {
+
+		if (persons.size() == 0) {
 			stationsDto = null;
 		}
-		
 		return stationsDto;
 	}
 
 	@Override
 	public PersonInfoDto getPersonInfo(String firstName, String lastName) {
-		Person person = personsInfosDao.getPerson(firstName, lastName);
+		Person person = personsInfosDao.findPersonByFistNameAndLastName(firstName, lastName);
 		log.debug("person : " + person);
-		if(person != null) {
+		if (person != null) {
 			MedicalRecord medicalRecord = personsInfosDao.findMedicalRecordsByPerson(person);
 			log.debug("dossier med : " + medicalRecord);
-			
+
 			PersonInfoDto personInfoDto = new PersonInfoDto();
 			int old = calculateAge(medicalRecord.getBirthdate());
 			log.debug("old : " + old);
 
 			ModelMapper modelMapper = new ModelMapper();
 			personInfoDto = modelMapper.map(person, PersonInfoDto.class);
-			//
+			
 			personInfoDto.setOld(old);
 			personInfoDto.setMedications(medicalRecord.getMedications());
 			personInfoDto.setAllergies(medicalRecord.getAllergies());
 			return personInfoDto;
 		}
-
 		return null;
 	}
 
@@ -383,10 +284,43 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		CommunityEmailDto emails = new CommunityEmailDto();
 		List<String> emailList = personsInfosDao.findEmailByCity(city);
 		emails.setEmails(emailList);
-		
 		if (emailList.size() == 0) {
 			emails = null;
 		}
 		return emails;
+	}
+
+	public static int calculateNumberOfChildren(List<MedicalRecord> listeMedicalRecord) {
+		Integer numberOfChildren = 0;
+		List<MedicalRecord> listeMedicalRecords = listeMedicalRecord;
+
+		for (MedicalRecord medicalRecord : listeMedicalRecords) {
+			int age = calculateAge(medicalRecord.getBirthdate());
+			if (age <= 18) {
+				numberOfChildren++;
+			}
+		}
+		return numberOfChildren;
+	}
+
+	public static int calculateNumberOfAdults(List<MedicalRecord> listeMedicalRecord) {
+		Integer numberOfAdults = 0;
+		List<MedicalRecord> listeMedicalRecords = listeMedicalRecord;
+
+		for (MedicalRecord medicalRecord : listeMedicalRecords) {
+			int age = calculateAge(medicalRecord.getBirthdate());
+			if (age > 18) {
+				numberOfAdults++;
+			}
+		}
+		return numberOfAdults;
+	}
+
+	public static int calculateAge(String birthdate) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		LocalDate date = LocalDate.parse(birthdate, formatter);
+		LocalDate birthDate = date;
+		LocalDate currentDate = LocalDate.now();
+		return Period.between(birthDate, currentDate).getYears();
 	}
 }

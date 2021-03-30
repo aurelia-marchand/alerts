@@ -19,9 +19,11 @@ import com.safetynet.alerts.dao.PersonDaoImpl;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.model.PersonsInfos;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @WebMvcTest(PersonDaoImpl.class)
+@Slf4j
 class PersonDaoImplTest {
 
 	@Autowired
@@ -47,32 +49,59 @@ private void setUpPerTest() {
 
 	@Test
 	void testFindAllPersons() {
+		//ARRANGE
 		when(accessJsonImpl.getData()).thenReturn(personsInfos);
-		
+		//ACT
 		List<Person> result = personDaoImpl.findAllPersons();
-		
+		//ASSERT
 		assertThat(result.size()).isEqualTo(3);
 	}
 	
 	@Test
 	void testGetPerson() {
+		//ARRANGE
 		when(accessJsonImpl.getData()).thenReturn(personsInfos);
-		
-		Person result = personDaoImpl.getPerson("Felicia", "Boyd");
-		
+		//ACT
+		Person result = personDaoImpl.findPersonByFirstNameAndLastName("Felicia", "Boyd");
+		//ASSERT
 		assertThat("Felicia").isEqualToIgnoringCase(result.getFirstName());
 	}
 	
 	@Test
-	void testDeletePerson() {
+	void testSavePerson() {
+		//ARRANGE
 		when(accessJsonImpl.getData()).thenReturn(personsInfos);
+		Person personToPost = new Person("Aurelia", "Marchand", "place de la halle", "magny", 97420, "999-999-999", "aure@email.com");
+	
+		//ACT
+		Person newPerson = personDaoImpl.savePerson(personToPost);
 		
-		List <Person> result1 =personsInfos.getPersons();
-		assertThat(3).isEqualTo(result1.size());
-		personDaoImpl.deletePerson("Felicia", "Boyd");
+		//ASSERT
+		assertThat(personsInfos.getPersons()).contains(newPerson);
+	}
+	
+	@Test
+	void testUpdatePerson() {
+		//ARRANGE
+		when(accessJsonImpl.getData()).thenReturn(personsInfos);
+		Person personToPut = new Person("Aurelia", "Marchand", "Avenue du val", "magny", 97420, "999-999-999", "aure@email.com");
+	
+		//ACT
+		personDaoImpl.updatePerson(personToPut);
 		
+		//ASSERT
+		List<Person> persons = personsInfos.getPersons();
+		assertThat(persons).contains(personToPut);
+	}
+	
+	@Test
+	void testDeletePerson() {
+		//ARRANGE
+		when(accessJsonImpl.getData()).thenReturn(personsInfos);
+		//ACT
+		personDaoImpl.deletePersonByFirstNameAndLastName("Felicia", "Boyd");
 		List <Person> result = personsInfos.getPersons();
-		
+		//ASSERT
 		assertThat(2).isEqualTo(result.size());
 	}
 	

@@ -8,9 +8,9 @@ import com.safetynet.alerts.model.Person;
 public interface PersonDaoI {
 
 	public List<Person> findAllPersons();
-	public Person getPerson(String firstName, String lastName);
-	public Person postPerson(Person person);
-	public Person putPerson(Person personToUpdate);
-	public Person deletePerson(String firstName, String lastName);
+	public Person findPersonByFirstNameAndLastName(String firstName, String lastName);
+	public Person savePerson(Person person);
+	public Person updatePerson(Person personToUpdate);
+	public Person deletePersonByFirstNameAndLastName(String firstName, String lastName);
 	
 }

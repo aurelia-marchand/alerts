@@ -32,21 +32,26 @@ public class PersonDaoImpl implements PersonDaoI {
 	}
 
 	@Override
-	public Person getPerson(String firstName, String lastName) {
+	public Person findPersonByFirstNameAndLastName(String firstName, String lastName) {
+		Person personToGet = null;
 		List<Person> persons = accessJson.getData().getPersons();
+		log.debug("persons : " + persons);
 		for (Person person : persons) {
+			log.debug("firstname = " + firstName + " comparé à " + person.getFirstName());
+			log.debug("lastname = " + lastName + " comparé à " + person.getLastName());
+
 			if (person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName)) {
 				log.debug("dao renvoi : "+ person);
-				return person;
-			} else {
-				return null;
-			}
+				personToGet = person;
+				
+			} 
 		}
-		return null;
+	
+		return personToGet;
 	}
 
 	@Override
-	public Person postPerson(Person personToPost) {
+	public Person savePerson(Person personToPost) {
 		
 		PersonsInfos personsInfos = accessJson.getData();
 		List<Person> persons = findAllPersons();
@@ -57,11 +62,11 @@ public class PersonDaoImpl implements PersonDaoI {
 
 		accessJson.writeData(personsInfos);
 
-		return null;
+		return newPerson;
 	}
 
 	@Override
-	public Person putPerson(Person personToPut) {
+	public Person updatePerson(Person personToPut) {
 		PersonsInfos personsInfos = accessJson.getData();
 		List<Person> persons = findAllPersons();
 		Person personToUpdate = personToPut;
@@ -80,7 +85,7 @@ public class PersonDaoImpl implements PersonDaoI {
 	}
 
 	@Override
-	public Person deletePerson(String firstName, String lastName) {
+	public Person deletePersonByFirstNameAndLastName(String firstName, String lastName) {
 		PersonsInfos personsInfos = accessJson.getData();
 		List<Person> persons = findAllPersons();
 		Person personToDelete = null;

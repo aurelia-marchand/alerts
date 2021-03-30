@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -15,6 +16,7 @@ import com.safetynet.alerts.model.PersonsInfos;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
+@ConditionalOnProperty(name = "app.environment", havingValue = "dev")
 @Slf4j
 public class AccessJsonImpl implements AccessJsonI{
 

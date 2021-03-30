@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Component
-public class DistrictPersonsDto {
+public class DistrictPeopleDto {
 
 	private String firstName;
 	private String lastName;

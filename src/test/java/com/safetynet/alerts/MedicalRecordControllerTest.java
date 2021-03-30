@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alerts.controller.MedicalRecordController;
 import com.safetynet.alerts.dto.DistrictDto;
-import com.safetynet.alerts.dto.DistrictPersonsDto;
+import com.safetynet.alerts.dto.DistrictPeopleDto;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.service.MedicalRecordServiceI;
 
@@ -69,17 +69,19 @@ class MedicalRecordControllerTest {
 
 	@Test
 	void testDeletMedicalRecord() throws Exception {
+		//ARRANGE
 		when(medicalRecordService.getMedicalRecord("Felicia", "Boyd")).thenReturn(med1);
+		//ACT AND ASSERT
 		mockMvc.perform(delete("/medicalRecord?firstName=Felicia&lastName=Boyd")).andExpect(status().isOk());
-
 		verify(medicalRecordService).deleteMedicalRecord("Felicia", "Boyd");
 	}
 	
 	@Test
 	void testPutMedicalRecord() throws Exception {
+		//ARRANGE
 		when(medicalRecordService.getMedicalRecord("Jonanathan", "Marrack")).thenReturn(med2);
 		when(medicalRecordService.putMedicalRecord(med2)).thenReturn(med2);
-
+		//ACT AND ASSERT
 		mockMvc.perform(put("/medicalRecord?firstName=Jonanathan&lastName=Marrack").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(med2))).andExpect(status().isCreated());
 
@@ -87,9 +89,10 @@ class MedicalRecordControllerTest {
 	
 	@Test
 	void testPostMedicalRecord() throws Exception {
+		//ARRANGE
 		when(medicalRecordService.getMedicalRecord("Tony", "Cooper")).thenReturn(null);
 		when(medicalRecordService.postMedicalRecord(med3)).thenReturn(med3);
-
+		//ACT AND ASSERT
 		mockMvc.perform(post("/medicalRecord?firstName=Tony&lastName=Cooper").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(med3))).andExpect(status().isCreated());
 

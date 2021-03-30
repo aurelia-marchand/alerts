@@ -28,7 +28,7 @@ public class PersonServiceImpl implements PersonServiceI{
 	@Override
 	public Person getPerson(String firstName, String lastName) {
 		log.debug("service demande au dao : " + firstName + " " + lastName);
-		return personDao.getPerson(firstName, lastName);
+		return personDao.findPersonByFirstNameAndLastName(firstName, lastName);
 	}
 
 	@Override
@@ -36,13 +36,14 @@ public class PersonServiceImpl implements PersonServiceI{
 		String firstName = person.getFirstName();
 		String lastName = person.getLastName();
 		
-		Person personToPost = personDao.getPerson(firstName, lastName);
+		Person personToPost = personDao.findPersonByFirstNameAndLastName(firstName, lastName);
 		
 		if(personToPost == null) {
-			log.debug("envoi de la personne à créer au dao");
-			personDao.postPerson(person);
+			log.debug("envoi de la personne à créer au dao : " + personToPost);
+			personDao.savePerson(person);
 		} else {
 			log.error("Personne déjà existante");
+			log.debug("personne existantte : " + personToPost);
 		}
 		
 		return person;
@@ -51,7 +52,7 @@ public class PersonServiceImpl implements PersonServiceI{
 	@Override
 	public Person putPerson(Person personToPut) {
 
-		Person person = personDao.getPerson(personToPut.getFirstName(), personToPut.getLastName());
+		Person person = personDao.findPersonByFirstNameAndLastName(personToPut.getFirstName(), personToPut.getLastName());
 		
 		//Mise à jour de la personne selon les valeurs reçues
 		String address = personToPut.getAddress();
@@ -80,19 +81,22 @@ public class PersonServiceImpl implements PersonServiceI{
 			person.setEmail(email);
 		}
 		
-		personDao.putPerson(person);		
+		if (person != null) {
+			personDao.updatePerson(person);
+		}
+				
 		return person;
 	}
 
 	@Override
 	public Person deletePerson(String firstName, String lastName) {
 		
-		Person personToDelete = personDao.getPerson(firstName, lastName);
+		personDao.findPersonByFirstNameAndLastName(firstName, lastName);
 		
 		log.debug("envoi de la personne à supprimer au dao");
-		personDao.deletePerson(firstName, lastName);
+		personDao.deletePersonByFirstNameAndLastName(firstName, lastName);
 		
-		return personToDelete;
+		return null;
 	}
 
 }

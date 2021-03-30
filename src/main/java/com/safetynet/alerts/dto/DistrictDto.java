@@ -10,7 +10,7 @@ import lombok.Data;
 @Component
 public class DistrictDto {
 	
-	private List<DistrictPersonsDto> districtPersonsDto;
+	private List<DistrictPeopleDto> districtPersonsDto;
 
 	private int numberOfAdults;
 	private int numberOfChildren;

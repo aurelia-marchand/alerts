@@ -26,15 +26,15 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceI {
 	@Override
 	public MedicalRecord getMedicalRecord(String firstName, String lastName) {
 		log.debug("service demande au dao dossier médical de : " + firstName + " " + lastName);
-		return medicalRecordDao.getMedicalRecord(firstName, lastName);
+		return medicalRecordDao.findMedicalRecordByFirstNameAndLastName(firstName, lastName);
 	}
 
 	@Override
 	public MedicalRecord deleteMedicalRecord(String firstName, String lastName) {
-		MedicalRecord medicalRecordToDelete = medicalRecordDao.getMedicalRecord(firstName, lastName);
+		MedicalRecord medicalRecordToDelete = medicalRecordDao.findMedicalRecordByFirstNameAndLastName(firstName, lastName);
 
 		log.debug("envoi du dossier à supprimer au dao");
-		medicalRecordDao.deleteMedicalRecord(firstName, lastName);
+		medicalRecordDao.deleteMedicalRecordByFirstNameAndLastName(firstName, lastName);
 
 		return medicalRecordToDelete;
 
@@ -42,7 +42,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceI {
 
 	@Override
 	public MedicalRecord putMedicalRecord(MedicalRecord medicalRecordToPut) {
-		MedicalRecord medicalRecord = medicalRecordDao.getMedicalRecord(medicalRecordToPut.getFirstName(), medicalRecordToPut.getLastName());
+		MedicalRecord medicalRecord = medicalRecordDao.findMedicalRecordByFirstNameAndLastName(medicalRecordToPut.getFirstName(), medicalRecordToPut.getLastName());
 		
 		//Mise à jour du dossier de la personne selon les valeurs reçues
 				String birthdate = medicalRecordToPut.getBirthdate();
@@ -62,8 +62,8 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceI {
 					log.debug("reçu valeur medications : " + allergies);
 					medicalRecord.setAllergies(allergies);
 				}
-		medicalRecordDao.putMedicalRecord(medicalRecord);
-		return null;
+		medicalRecordDao.updateMedicalRecord(medicalRecord);
+		return medicalRecordToPut;
 	}
 
 	@Override
@@ -71,16 +71,16 @@ public class MedicalRecordServiceImpl implements MedicalRecordServiceI {
 		String firstName = medicalRecord.getFirstName();
 		String lastName = medicalRecord.getLastName();
 		
-		MedicalRecord medicalRecordToPost = medicalRecordDao.getMedicalRecord(firstName, lastName);
+		MedicalRecord medicalRecordToPost = medicalRecordDao.findMedicalRecordByFirstNameAndLastName(firstName, lastName);
 		
 		if(medicalRecordToPost == null) {
 			log.debug("envoi de la personne à créer au dao");
-			medicalRecordDao.postMedicalRecord(medicalRecord);
+			medicalRecordDao.saveMedicalRecord(medicalRecord);
 		} else {
 			log.error("Dossier déjà existant");
 		}
 		
-		return null;
+		return medicalRecord;
 	}
 
 }

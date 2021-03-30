@@ -21,7 +21,7 @@ import com.safetynet.alerts.dto.AlertPhoneDto;
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.CommunityEmailDto;
 import com.safetynet.alerts.dto.DistrictDto;
-import com.safetynet.alerts.dto.DistrictPersonsDto;
+import com.safetynet.alerts.dto.DistrictPeopleDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.dto.StationsDto;
 import com.safetynet.alerts.dto.StreetDto;
@@ -86,18 +86,18 @@ class PersonsInfosControllerTest {
 		persons.add(personTest2);
 		persons.add(personTest3);
 		
-		DistrictPersonsDto districtPersonDto1 = new DistrictPersonsDto();
+		DistrictPeopleDto districtPersonDto1 = new DistrictPeopleDto();
 		ModelMapper modelMapper = new ModelMapper();
-		districtPersonDto1 = modelMapper.map(personTest1, DistrictPersonsDto.class);
-		DistrictPersonsDto districtPersonDto2 = new DistrictPersonsDto();
+		districtPersonDto1 = modelMapper.map(personTest1, DistrictPeopleDto.class);
+		DistrictPeopleDto districtPersonDto2 = new DistrictPeopleDto();
 		ModelMapper modelMapper2 = new ModelMapper();
-		districtPersonDto2 = modelMapper2.map(personTest2, DistrictPersonsDto.class);
-		DistrictPersonsDto districtPersonDto3 = new DistrictPersonsDto();
+		districtPersonDto2 = modelMapper2.map(personTest2, DistrictPeopleDto.class);
+		DistrictPeopleDto districtPersonDto3 = new DistrictPeopleDto();
 		ModelMapper modelMapper3 = new ModelMapper();
-		districtPersonDto3 = modelMapper3.map(personTest3, DistrictPersonsDto.class);
+		districtPersonDto3 = modelMapper3.map(personTest3, DistrictPeopleDto.class);
 
 		
-		List<DistrictPersonsDto> districtPersonsDto = new ArrayList<>();
+		List<DistrictPeopleDto> districtPersonsDto = new ArrayList<>();
 		districtPersonsDto.add(districtPersonDto1);
 		districtPersonsDto.add(districtPersonDto2);
 		districtPersonsDto.add(districtPersonDto3);
@@ -113,119 +113,131 @@ class PersonsInfosControllerTest {
 	
 	@Test
 	void testGetPersonsByStationIfExist() throws Exception {
+		//ARRANGE
 		when(personsInfosService.getListPersonsByStationNumber(1)).thenReturn(districtDto);
-		
+		// ACT AND ASSERT
 		mockMvc.perform(get("/firestation?stationNumber=1")).andExpect(status().isOk());
 	}
 	
 	@Test
 	void testGetPersonsByStationIfNotExist() throws Exception {
+		//ARRANGE
 		DistrictDto districtDto2 = new DistrictDto();
 		when(personsInfosService.getListPersonsByStationNumber(10)).thenReturn(districtDto2);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/firestation?stationNumber=10")).andExpect(status().isNotFound());
 	}
 
 	@Test
 	void testGetChidrenByAddressIfExist() throws Exception {
+		//ARRANGE
 		ChildAlertDto childAlertDto = new ChildAlertDto();
 		when(personsInfosService.getListChildrenByAddress("1509 Culver St")).thenReturn(childAlertDto);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/childAlert?address=1509 Culver St")).andExpect(status().isOk());
 	}
 	
 	@Test
 	void testGetChidrenByAddressIfNotExist() throws Exception {
+		//ARRANGE
 		ChildAlertDto childAlertDto = null;
 		when(personsInfosService.getListChildrenByAddress("place de la halle")).thenReturn(childAlertDto);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/childAlert?address=1509 Culver St")).andExpect(status().isNotFound());
 	}
 	
 	@Test
 	void testGetPhoneByStationNumberIfExist() throws Exception {
+		//ARRANGE
 		AlertPhoneDto alertPhoneDto = new AlertPhoneDto();
 		when(personsInfosService.getListPhoneByStation(1)).thenReturn(alertPhoneDto);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/phoneAlert?firestation=1")).andExpect(status().isOk());
 	}
 	
 	@Test
 	void testGetPhoneByStationNumberIfNotExist() throws Exception {
+		//ARRANGE
 		when(personsInfosService.getListPhoneByStation(2)).thenReturn(null);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/phoneAlert?firestation=1")).andExpect(status().isNotFound());
 	}
 	
 	
 	@Test
 	void testGetPeopleByAddressIfExist() throws Exception {
+		//ARRANGE
 		StreetDto streetDto = new StreetDto();
 		when(personsInfosService.getPeopleByAddress("1509 Culver St")).thenReturn(streetDto);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/fire?address=1509 Culver St")).andExpect(status().isOk());
 	}
 	
 	@Test
 	void testGetPeopleByAddressIfNotExist() throws Exception {
+		//ARRANGE
 		when(personsInfosService.getPeopleByAddress("1509 Culver St")).thenReturn(null);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/fire?address=1509 Culver St")).andExpect(status().isNotFound());
 	}
 	
 	@Test
 	void testGetPeopleByStationIfExist() throws Exception {
+		//ARRANGE
 		List<StationsDto> stationsDto = new ArrayList<>(); 
 		List<Integer> stations = new ArrayList<>();
 		stations.add(1);
 		stations.add(2);
 		
 		when(personsInfosService.getPeopleByListStation(stations)).thenReturn(stationsDto);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/flood/stations?stations=1,2")).andExpect(status().isOk());
 	}
 	
 	@Test
 	void testGetPeopleByStationIfNotExist() throws Exception {
-		
+		//ARRANGE
 		List<Integer> stations = new ArrayList<>();
 		stations.add(1);
 		stations.add(2);
 		
 		when(personsInfosService.getPeopleByListStation(stations)).thenReturn(null);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/flood/stations?stations=1,2")).andExpect(status().isNotFound());
 	}
 	
 	@Test
 	void testGetPersonInfoIfExist() throws Exception {
+		//ARRANGE
 		PersonInfoDto personInfo = new PersonInfoDto();
 		
 		when(personsInfosService.getPersonInfo("felicia", "boyd")).thenReturn(personInfo);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/personInfo?firstName=felicia&lastName=boyd")).andExpect(status().isOk());
 	}
 	
 	@Test
 	void testGetPersonInfoIfNotExist() throws Exception {
-		
+		//ARRANGE
 		when(personsInfosService.getPersonInfo("anna", "boyd")).thenReturn(null);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/personInfo?firstName=anna&lastName=boyd")).andExpect(status().isNotFound());
 	}
 	
 	@Test
 	void testGetCommunityEmailIfExist() throws Exception {
+		//ARRANGE
 		CommunityEmailDto emailListDto = new CommunityEmailDto();		
 		when(personsInfosService.getCommunityEmail("culver")).thenReturn(emailListDto);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/communityEmail?city=culver")).andExpect(status().isOk());
 	}
 	
 	@Test
 	void testGetCommunityEmailIfNotExist() throws Exception {
+		//ARRANGE
 		when(personsInfosService.getCommunityEmail("culver")).thenReturn(null);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(get("/communityEmail?city=culver")).andExpect(status().isNotFound());
 	}
 	

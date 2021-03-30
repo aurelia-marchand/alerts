@@ -3,30 +3,28 @@ package com.safetynet.alerts.dao;
 import java.util.List;
 import java.util.Set;
 
-import com.safetynet.alerts.dto.DistrictPersonsDto;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.model.PersonsInfos;
 
 public interface PersonsInfosDaoI {
 	
-	public PersonsInfos findPersonsByStationNumber(int station);
-
-	public List<MedicalRecord> findMedicalRecordsByPersons(List<DistrictPersonsDto> personsByStationDto2);
+	public List<Person> findPersonsByStationNumber(int station);
 
 	public List<Person> findPersonsByAddress(String address);
 
-	public List<MedicalRecord> findMedicalRecordsByPerson(List<Person> personneByAddress);
+	public List<MedicalRecord> findMedicalRecordsByListPerson(List<Person> personneByAddress);
 
-	public int getStationByAddress(String address);
+	public int findStationByAddress(String address);
 
 	public Set<String> findAddressByStation(int station);
 
 	public List<Person> findPersonsByStation(List<Integer> stations);
 
-	public Person getPerson(String firstName, String lastName);
+	public Person findPersonByFistNameAndLastName(String firstName, String lastName);
 
 	public MedicalRecord findMedicalRecordsByPerson(Person person);
 
 	public List<String> findEmailByCity(String city);
+
+	public List<String> findPhoneByStationNumber(int station);
 }

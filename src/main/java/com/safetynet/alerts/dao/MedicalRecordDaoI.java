@@ -8,12 +8,12 @@ public interface MedicalRecordDaoI {
 
 	List<MedicalRecord> findAllMedicalRecords();
 
-	MedicalRecord getMedicalRecord(String firstName, String lastName);
+	MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName);
 
-	MedicalRecord deleteMedicalRecord(String firstName, String lastName);
+	MedicalRecord deleteMedicalRecordByFirstNameAndLastName(String firstName, String lastName);
 
-	MedicalRecord putMedicalRecord(MedicalRecord medicalRecord);
+	MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord);
 
-	MedicalRecord postMedicalRecord(MedicalRecord medicalRecord);
+	MedicalRecord saveMedicalRecord(MedicalRecord medicalRecord);
 
 }

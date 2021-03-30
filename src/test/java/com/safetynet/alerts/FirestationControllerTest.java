@@ -52,33 +52,37 @@ class FirestationControllerTest {
 
 	@Test
 	void testPostFirestation() throws Exception {
+		//ARRANGE
 		when(firestationService.getFirestation("8 rue du general leclerc")).thenReturn(null);
 		when(firestationService.postFirestation(firestation1)).thenReturn(firestation1);
-		
+		//ACT AND ASSERT
 		mockMvc.perform(post("/firestation")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(firestation1)))
 				.andExpect(status().isCreated());
-		
+
 		verify(firestationService).postFirestation(firestation1);
 	}
 
 	@Test
 	void testPutFirestation() throws Exception {
+		//ARRANGE
 		when(firestationService.getFirestation("14 place de la halle")).thenReturn(firestation2);
 		when(firestationService.putFirestation(firestation2)).thenReturn(firestation2);
-
+		//ACT AND ASSERT
 		mockMvc.perform(put("/firestation?address=14 place de la halle").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(firestation2))).andExpect(status().isCreated());
-
+	
 		verify(firestationService).putFirestation(firestation2);
 	}
 
 	@Test
 	void testDeleteFirestation() throws Exception {
+		//ARRANGE
 		when(firestationService.getFirestation("14 place de la halle")).thenReturn(firestation2);
+		//ACT AND ASSERT
 		mockMvc.perform(delete("/firestation?address=14 place de la halle")).andExpect(status().isOk());
-
+	
 		verify(firestationService).deleteFirestation("14 place de la halle");
 	}
 

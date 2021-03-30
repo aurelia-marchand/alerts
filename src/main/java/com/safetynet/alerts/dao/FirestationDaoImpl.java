@@ -32,19 +32,20 @@ public class FirestationDaoImpl implements FirestationDaoI {
 	}
 
 	@Override
-	public Firestation getFirestation(String address) {
+	public Firestation findFirestationByAddress(String address) {
 		List<Firestation> firestations = accessJson.getData().getFirestations();
+		Firestation firestationToGet = new Firestation();
 		for (Firestation firestation : firestations) {
 			if (firestation.getAddress().equalsIgnoreCase(address)) {
 				log.debug("dao renvoi : "+ firestation);
-				return firestation;
+				firestationToGet = firestation;
 			}
 		}
-		return null;
+		return firestationToGet;
 	}
 
 	@Override
-	public Firestation postFirestation(Firestation firestationToPost) {
+	public Firestation saveFirestation(Firestation firestationToPost) {
 		PersonsInfos personsInfos = accessJson.getData();
 		List<Firestation> firestations = findAllFirestations();
 		Firestation newFirestation = firestationToPost;
@@ -58,7 +59,7 @@ public class FirestationDaoImpl implements FirestationDaoI {
 	}
 
 	@Override
-	public Firestation putFirestation(Firestation firestationToPut) {
+	public Firestation updateFirestation(Firestation firestationToPut) {
 		PersonsInfos personsInfos = accessJson.getData();
 		List<Firestation> firestations = findAllFirestations();
 		Firestation firestationToUpdate = firestationToPut;
@@ -78,7 +79,7 @@ public class FirestationDaoImpl implements FirestationDaoI {
 	}
 
 	@Override
-	public Firestation deleteFirestation(String address) {
+	public Firestation deleteFirestationByAddress(String address) {
 		PersonsInfos personsInfos = accessJson.getData();
 		List<Firestation> firestations = findAllFirestations();
 		Firestation firestationToDelete = new Firestation();
@@ -95,7 +96,7 @@ public class FirestationDaoImpl implements FirestationDaoI {
 		personsInfos.setFirestations(firestations);
 
 		accessJson.writeData(personsInfos);
-		return firestationToDelete;
+		return null;
 
 	}
 

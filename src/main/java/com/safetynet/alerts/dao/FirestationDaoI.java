@@ -8,12 +8,12 @@ public interface FirestationDaoI {
 
 	List<Firestation> findAllFirestations();
 
-	Firestation getFirestation(String address);
+	Firestation findFirestationByAddress(String address);
 
-	Firestation postFirestation(Firestation firestationToPost);
+	Firestation saveFirestation(Firestation firestationToPost);
 
-	Firestation putFirestation(Firestation firestation);
+	Firestation updateFirestation(Firestation firestation);
 
-	Firestation deleteFirestation(String address);
+	Firestation deleteFirestationByAddress(String address);
 
 }

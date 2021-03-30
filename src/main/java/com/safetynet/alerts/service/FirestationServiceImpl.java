@@ -20,7 +20,7 @@ public class FirestationServiceImpl implements FirestationServiceI {
 	@Override
 	public Firestation getFirestation(String address) {
 		log.debug("service demande au dao recherche station à l'adresse : " + address);
-		Firestation firestation = firestationDao.getFirestation(address);
+		Firestation firestation = firestationDao.findFirestationByAddress(address);
 		return firestation;
 	}
 
@@ -28,11 +28,11 @@ public class FirestationServiceImpl implements FirestationServiceI {
 	public Firestation postFirestation(Firestation firestation) {
 		String address = firestation.getAddress();
 		
-		Firestation firestationToPost = firestationDao.getFirestation(address);
+		Firestation firestationToPost = firestationDao.findFirestationByAddress(address);
 
 		if (firestationToPost == null) {
 			log.debug("envoi de la firestation à créer au dao");
-			firestationDao.postFirestation(firestation);
+			firestationDao.saveFirestation(firestation);
 		} else {
 			log.error("Firestation déjà existante");
 		}
@@ -42,7 +42,7 @@ public class FirestationServiceImpl implements FirestationServiceI {
 
 	@Override
 	public Firestation putFirestation(Firestation firestationToPut) {
-		Firestation firestation = firestationDao.getFirestation(firestationToPut.getAddress());
+		Firestation firestation = firestationDao.findFirestationByAddress(firestationToPut.getAddress());
 
 		// Mise à jour de la personne selon les valeurs reçues
 		int station = firestationToPut.getStation();
@@ -51,18 +51,18 @@ public class FirestationServiceImpl implements FirestationServiceI {
 			firestation.setStation(station);
 		}
 
-		firestationDao.putFirestation(firestation);
+		firestationDao.updateFirestation(firestation);
 		return firestationToPut;
 	}
 
 	@Override
 	public Firestation deleteFirestation(String address) {
-		Firestation firestationToDelete = firestationDao.getFirestation(address);
+		firestationDao.findFirestationByAddress(address);
 
 		log.debug("envoi de la firestation à supprimer au dao");
-		firestationDao.deleteFirestation(address);
+		firestationDao.deleteFirestationByAddress(address);
 
-		return firestationToDelete;
+		return null;
 	}
 
 	@Override
