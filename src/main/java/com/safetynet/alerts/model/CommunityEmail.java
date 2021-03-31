@@ -1,4 +1,4 @@
-package com.safetynet.alerts.dto;
+package com.safetynet.alerts.model;
 
 import java.util.List;
 
@@ -8,10 +8,7 @@ import lombok.Data;
 
 @Data
 @Component
-public class StreetDto {
+public class CommunityEmail {
 
-	
-	int station;
-	List<StreetPeopleDto> streetPeopleDto;
-	
+	List<String> emails;
 }

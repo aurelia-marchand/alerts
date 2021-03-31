@@ -17,16 +17,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.safetynet.alerts.controller.PersonsInfosController;
-import com.safetynet.alerts.dto.AlertPhoneDto;
-import com.safetynet.alerts.dto.ChildAlertDto;
-import com.safetynet.alerts.dto.CommunityEmailDto;
-import com.safetynet.alerts.dto.DistrictDto;
-import com.safetynet.alerts.dto.DistrictPeopleDto;
+import com.safetynet.alerts.dto.DistrictPersonDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
-import com.safetynet.alerts.dto.StationsDto;
-import com.safetynet.alerts.dto.StreetDto;
+import com.safetynet.alerts.model.PhoneAlert;
+import com.safetynet.alerts.model.ChildAlert;
+import com.safetynet.alerts.model.CommunityEmail;
+import com.safetynet.alerts.model.DistrictPeople;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
+import com.safetynet.alerts.model.StationsPeople;
+import com.safetynet.alerts.model.StreetPeople;
 import com.safetynet.alerts.service.PersonsInfosServiceI;
 
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +51,7 @@ class PersonsInfosControllerTest {
 	Person personTest3 = new Person();
 	Person personTest4 = new Person();
 	List<Person> persons = new ArrayList<>();
-	DistrictDto districtDto = new DistrictDto();
+	DistrictPeople districtDto = new DistrictPeople();
 
 
 	@BeforeEach
@@ -86,18 +86,18 @@ class PersonsInfosControllerTest {
 		persons.add(personTest2);
 		persons.add(personTest3);
 		
-		DistrictPeopleDto districtPersonDto1 = new DistrictPeopleDto();
+		DistrictPersonDto districtPersonDto1 = new DistrictPersonDto();
 		ModelMapper modelMapper = new ModelMapper();
-		districtPersonDto1 = modelMapper.map(personTest1, DistrictPeopleDto.class);
-		DistrictPeopleDto districtPersonDto2 = new DistrictPeopleDto();
+		districtPersonDto1 = modelMapper.map(personTest1, DistrictPersonDto.class);
+		DistrictPersonDto districtPersonDto2 = new DistrictPersonDto();
 		ModelMapper modelMapper2 = new ModelMapper();
-		districtPersonDto2 = modelMapper2.map(personTest2, DistrictPeopleDto.class);
-		DistrictPeopleDto districtPersonDto3 = new DistrictPeopleDto();
+		districtPersonDto2 = modelMapper2.map(personTest2, DistrictPersonDto.class);
+		DistrictPersonDto districtPersonDto3 = new DistrictPersonDto();
 		ModelMapper modelMapper3 = new ModelMapper();
-		districtPersonDto3 = modelMapper3.map(personTest3, DistrictPeopleDto.class);
+		districtPersonDto3 = modelMapper3.map(personTest3, DistrictPersonDto.class);
 
 		
-		List<DistrictPeopleDto> districtPersonsDto = new ArrayList<>();
+		List<DistrictPersonDto> districtPersonsDto = new ArrayList<>();
 		districtPersonsDto.add(districtPersonDto1);
 		districtPersonsDto.add(districtPersonDto2);
 		districtPersonsDto.add(districtPersonDto3);
@@ -122,7 +122,7 @@ class PersonsInfosControllerTest {
 	@Test
 	void testGetPersonsByStationIfNotExist() throws Exception {
 		//ARRANGE
-		DistrictDto districtDto2 = new DistrictDto();
+		DistrictPeople districtDto2 = new DistrictPeople();
 		when(personsInfosService.getListPersonsByStationNumber(10)).thenReturn(districtDto2);
 		//ACT AND ASSERT
 		mockMvc.perform(get("/firestation?stationNumber=10")).andExpect(status().isNotFound());
@@ -131,7 +131,7 @@ class PersonsInfosControllerTest {
 	@Test
 	void testGetChidrenByAddressIfExist() throws Exception {
 		//ARRANGE
-		ChildAlertDto childAlertDto = new ChildAlertDto();
+		ChildAlert childAlertDto = new ChildAlert();
 		when(personsInfosService.getListChildrenByAddress("1509 Culver St")).thenReturn(childAlertDto);
 		//ACT AND ASSERT
 		mockMvc.perform(get("/childAlert?address=1509 Culver St")).andExpect(status().isOk());
@@ -140,7 +140,7 @@ class PersonsInfosControllerTest {
 	@Test
 	void testGetChidrenByAddressIfNotExist() throws Exception {
 		//ARRANGE
-		ChildAlertDto childAlertDto = null;
+		ChildAlert childAlertDto = null;
 		when(personsInfosService.getListChildrenByAddress("place de la halle")).thenReturn(childAlertDto);
 		//ACT AND ASSERT
 		mockMvc.perform(get("/childAlert?address=1509 Culver St")).andExpect(status().isNotFound());
@@ -149,7 +149,7 @@ class PersonsInfosControllerTest {
 	@Test
 	void testGetPhoneByStationNumberIfExist() throws Exception {
 		//ARRANGE
-		AlertPhoneDto alertPhoneDto = new AlertPhoneDto();
+		PhoneAlert alertPhoneDto = new PhoneAlert();
 		when(personsInfosService.getListPhoneByStation(1)).thenReturn(alertPhoneDto);
 		//ACT AND ASSERT
 		mockMvc.perform(get("/phoneAlert?firestation=1")).andExpect(status().isOk());
@@ -167,7 +167,7 @@ class PersonsInfosControllerTest {
 	@Test
 	void testGetPeopleByAddressIfExist() throws Exception {
 		//ARRANGE
-		StreetDto streetDto = new StreetDto();
+		StreetPeople streetDto = new StreetPeople();
 		when(personsInfosService.getPeopleByAddress("1509 Culver St")).thenReturn(streetDto);
 		//ACT AND ASSERT
 		mockMvc.perform(get("/fire?address=1509 Culver St")).andExpect(status().isOk());
@@ -184,7 +184,7 @@ class PersonsInfosControllerTest {
 	@Test
 	void testGetPeopleByStationIfExist() throws Exception {
 		//ARRANGE
-		List<StationsDto> stationsDto = new ArrayList<>(); 
+		List<StationsPeople> stationsDto = new ArrayList<>(); 
 		List<Integer> stations = new ArrayList<>();
 		stations.add(1);
 		stations.add(2);
@@ -227,7 +227,7 @@ class PersonsInfosControllerTest {
 	@Test
 	void testGetCommunityEmailIfExist() throws Exception {
 		//ARRANGE
-		CommunityEmailDto emailListDto = new CommunityEmailDto();		
+		CommunityEmail emailListDto = new CommunityEmail();		
 		when(personsInfosService.getCommunityEmail("culver")).thenReturn(emailListDto);
 		//ACT AND ASSERT
 		mockMvc.perform(get("/communityEmail?city=culver")).andExpect(status().isOk());

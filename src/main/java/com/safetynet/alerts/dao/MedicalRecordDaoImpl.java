@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.safetynet.alerts.model.MedicalRecord;
-import com.safetynet.alerts.model.PersonsInfos;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +43,7 @@ public class MedicalRecordDaoImpl implements MedicalRecordDaoI {
 
 	@Override
 	public MedicalRecord deleteMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
-		PersonsInfos personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<MedicalRecord> medicalRecords = findAllMedicalRecords();
 		MedicalRecord medicalRecordToDelete = null;
 		
@@ -64,7 +63,7 @@ public class MedicalRecordDaoImpl implements MedicalRecordDaoI {
 
 	@Override
 	public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecordToPut) {
-		PersonsInfos personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<MedicalRecord> medicalRecords = findAllMedicalRecords();
 		MedicalRecord medicalRecordToUpdate = medicalRecordToPut;
 		int index = 0;
@@ -83,7 +82,7 @@ public class MedicalRecordDaoImpl implements MedicalRecordDaoI {
 
 	@Override
 	public MedicalRecord saveMedicalRecord(MedicalRecord medicalRecordToPost) {
-		PersonsInfos personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<MedicalRecord> medicalRecords = findAllMedicalRecords();
 		MedicalRecord newMedicalRecord = medicalRecordToPost;
 		

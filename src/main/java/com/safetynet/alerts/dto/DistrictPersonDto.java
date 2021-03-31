@@ -6,11 +6,12 @@ import lombok.Data;
 
 @Data
 @Component
-public class ChildrenByAddressDto {
-	
+public class DistrictPersonDto {
+
 	private String firstName;
 	private String lastName;
 	private String address;
-	private int age;
+	private String phone;
+	
 	
 }

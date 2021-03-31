@@ -15,9 +15,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.safetynet.alerts.dao.AccessJsonImpl;
+import com.safetynet.alerts.dao.Datas;
 import com.safetynet.alerts.dao.PersonDaoImpl;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.model.PersonsInfos;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -33,7 +33,7 @@ class PersonDaoImplTest {
 	AccessJsonImpl accessJsonImpl;
 	
 	List<Person> persons = new ArrayList<>();
-	PersonsInfos personsInfos = new PersonsInfos();
+	Datas personsInfos = new Datas();
 	
 	@BeforeEach
 private void setUpPerTest() {

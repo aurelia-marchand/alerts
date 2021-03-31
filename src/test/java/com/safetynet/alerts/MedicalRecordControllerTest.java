@@ -22,8 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alerts.controller.MedicalRecordController;
-import com.safetynet.alerts.dto.DistrictDto;
-import com.safetynet.alerts.dto.DistrictPeopleDto;
+import com.safetynet.alerts.dto.DistrictPersonDto;
+import com.safetynet.alerts.model.DistrictPeople;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.service.MedicalRecordServiceI;
 

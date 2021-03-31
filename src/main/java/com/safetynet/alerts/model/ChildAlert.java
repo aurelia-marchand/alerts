@@ -1,4 +1,4 @@
-package com.safetynet.alerts.dto;
+package com.safetynet.alerts.model;
 
 import java.util.List;
 
@@ -8,7 +8,10 @@ import lombok.Data;
 
 @Data
 @Component
-public class AlertPhoneDto {
+public class ChildAlert {
 
-	List<String> phones;
+	List<Child> children;
+	
+	List<Adult> adults;
+	
 }

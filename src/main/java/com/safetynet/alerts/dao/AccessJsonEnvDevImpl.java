@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alerts.model.PersonsInfos;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,12 +26,12 @@ public class AccessJsonEnvDevImpl implements AccessJsonI{
 		File newState = new File("src/main/resources/data-test.json");
 		
 		@Autowired
-		PersonsInfos personsInfos;
+		Datas personsInfos;
 		
 		@Override
-		public PersonsInfos getData() {
+		public Datas getData() {
 			try {
-				personsInfos = mapper.readValue(newState, PersonsInfos.class);
+				personsInfos = mapper.readValue(newState, Datas.class);
 			} catch (JsonParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -47,7 +46,7 @@ public class AccessJsonEnvDevImpl implements AccessJsonI{
 		}
 
 		@Override
-		public PersonsInfos writeData(PersonsInfos personsInfos) {
+		public Datas writeData(Datas personsInfos) {
 			try {
 				mapper.writeValue(newState, personsInfos);
 			} catch (JsonGenerationException e) {
@@ -64,13 +63,13 @@ public class AccessJsonEnvDevImpl implements AccessJsonI{
 		}
 
 		@Override
-		public PersonsInfos updateData() {
+		public Datas updateData() {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public PersonsInfos deleteData() {
+		public Datas deleteData() {
 			// TODO Auto-generated method stub
 			return null;
 		}

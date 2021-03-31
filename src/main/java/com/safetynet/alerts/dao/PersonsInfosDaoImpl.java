@@ -9,11 +9,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.safetynet.alerts.dto.DistrictPeopleDto;
+import com.safetynet.alerts.dto.DistrictPersonDto;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.model.PersonsInfos;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,11 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 
 	@Autowired
-	PersonsInfos personsInfos;
+	Datas personsInfos;
 	@Autowired
 	AccessJsonI accessJson;
 	@Autowired
-	DistrictPeopleDto personsByStationDto;
+	DistrictPersonDto personsByStationDto;
 
 	@Override
 	public List<Person> findPersonsByStationNumber(int station) {

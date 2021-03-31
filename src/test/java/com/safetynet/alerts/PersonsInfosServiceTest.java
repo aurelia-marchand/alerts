@@ -18,19 +18,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.safetynet.alerts.dao.PersonsInfosDaoI;
-import com.safetynet.alerts.dto.AlertPhoneDto;
-import com.safetynet.alerts.dto.ChildAlertDto;
-import com.safetynet.alerts.dto.ChildrenByAddressDto;
-import com.safetynet.alerts.dto.ChildrenFamilyDto;
-import com.safetynet.alerts.dto.CommunityEmailDto;
-import com.safetynet.alerts.dto.DistrictDto;
-import com.safetynet.alerts.dto.DistrictPeopleDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
-import com.safetynet.alerts.dto.StationsDto;
-import com.safetynet.alerts.dto.StreetDto;
-import com.safetynet.alerts.dto.StreetPeopleDto;
+import com.safetynet.alerts.model.PhoneAlert;
+import com.safetynet.alerts.model.ChildAlert;
+import com.safetynet.alerts.model.CommunityEmail;
+import com.safetynet.alerts.model.DistrictPeople;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
+import com.safetynet.alerts.model.StationsPeople;
+import com.safetynet.alerts.model.StreetPeople;
 import com.safetynet.alerts.service.PersonsInfosServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
@@ -138,7 +134,7 @@ class PersonsInfosServiceTest {
 	@Test
 	void testGetListPersonsByStationNumber() {
 		// ARRANGE
-		DistrictDto peopleCoveredDto = new DistrictDto();
+		DistrictPeople peopleCoveredDto = new DistrictPeople();
 		
 		when(personsInfosDaoI.findPersonsByStationNumber(1)).thenReturn(person);
 		when(personsInfosDaoI.findMedicalRecordsByListPerson(person)).thenReturn(medicalRecordList);
@@ -156,7 +152,7 @@ class PersonsInfosServiceTest {
 	@Test
 	void testGetListChildrenByAddress() {
 		// ARRANGE
-		ChildAlertDto childAlert = new ChildAlertDto();
+		ChildAlert childAlert = new ChildAlert();
 
 		when(personsInfosDaoI.findPersonsByAddress("1509 Culver St")).thenReturn(person);
 		when(personsInfosDaoI.findMedicalRecordsByListPerson(person)).thenReturn(medicalRecordList);
@@ -165,7 +161,7 @@ class PersonsInfosServiceTest {
 		childAlert = personsInfosServiceImpl.getListChildrenByAddress("1509 Culver St");
 		
 		// ASSERT
-		assertThat(childAlert.getChildrenByAdress().size()).isEqualTo(4);
+		assertThat(childAlert.getChildren().size()).isEqualTo(4);
 		
 		verify(personsInfosDaoI).findPersonsByAddress("1509 Culver St");
 		verify(personsInfosDaoI).findMedicalRecordsByListPerson(person);
@@ -174,7 +170,7 @@ class PersonsInfosServiceTest {
 	@Test
 	void testGetListPhoneByStation() {
 		// ARRANGE
-		AlertPhoneDto phoneAlertDto = new AlertPhoneDto();
+		PhoneAlert phoneAlertDto = new PhoneAlert();
 		List<String> phones = new ArrayList<>();
 		phones.add("999-999-999");
 		phones.add("888-888-888");
@@ -195,7 +191,7 @@ class PersonsInfosServiceTest {
 	@Test
 	public void testGetPeopleByAddress() {
 		// ARANGE
-		StreetDto streetDto = new StreetDto();
+		StreetPeople streetDto = new StreetPeople();
 		
 		when(personsInfosDaoI.findPersonsByAddress("1509 Culver St")).thenReturn(person);
 		when(personsInfosDaoI.findMedicalRecordsByListPerson(person)).thenReturn(medicalRecordList);
@@ -213,7 +209,7 @@ class PersonsInfosServiceTest {
 	public void testGetPeopleByListStation() {
 		// ARRANGE
 		//StationsDto stationDto = new StationsDto();
-		List<StationsDto> stationsListDto = new ArrayList<>();
+		List<StationsPeople> stationsListDto = new ArrayList<>();
 		List<Integer> stationsNumbers = new ArrayList<>();
 		stationsNumbers.add(1);
 		stationsNumbers.add(2);
@@ -251,7 +247,7 @@ class PersonsInfosServiceTest {
 	@Test
 	public void testGetCommunityEmail() {
 		// ARRANGE
-		CommunityEmailDto emails = new CommunityEmailDto();
+		CommunityEmail emails = new CommunityEmail();
 		List<String> email = new ArrayList<>();
 		email.add(personTest1.getEmail());
 		email.add(personTest2.getEmail());

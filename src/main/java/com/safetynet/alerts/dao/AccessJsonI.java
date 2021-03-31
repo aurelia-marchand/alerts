@@ -1,16 +1,14 @@
 package com.safetynet.alerts.dao;
 
-import com.safetynet.alerts.model.PersonsInfos;
-
 public interface AccessJsonI {
 
-	public PersonsInfos getData();
+	public Datas getData();
 	
-	public PersonsInfos writeData(PersonsInfos personsInfos);
+	public Datas writeData(Datas personsInfos);
 	
-	public PersonsInfos updateData();
+	public Datas updateData();
 	
-	public PersonsInfos deleteData();
+	public Datas deleteData();
 	
 }
 

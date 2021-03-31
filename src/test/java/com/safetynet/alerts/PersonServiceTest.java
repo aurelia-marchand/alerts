@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import com.safetynet.alerts.dao.Datas;
 import com.safetynet.alerts.dao.PersonDaoI;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.model.PersonsInfos;
 import com.safetynet.alerts.service.PersonServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ class PersonServiceTest {
 	PersonDaoI personDao;
 	
 	@MockBean
-	PersonsInfos personsInfos;
+	Datas personsInfos;
 	
 	@Autowired
 	PersonServiceImpl personServiceImpl;

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.safetynet.alerts.model.Firestation;
-import com.safetynet.alerts.model.PersonsInfos;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +45,7 @@ public class FirestationDaoImpl implements FirestationDaoI {
 
 	@Override
 	public Firestation saveFirestation(Firestation firestationToPost) {
-		PersonsInfos personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Firestation> firestations = findAllFirestations();
 		Firestation newFirestation = firestationToPost;
 		
@@ -60,7 +59,7 @@ public class FirestationDaoImpl implements FirestationDaoI {
 
 	@Override
 	public Firestation updateFirestation(Firestation firestationToPut) {
-		PersonsInfos personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Firestation> firestations = findAllFirestations();
 		Firestation firestationToUpdate = firestationToPut;
 		int index = 0;
@@ -80,7 +79,7 @@ public class FirestationDaoImpl implements FirestationDaoI {
 
 	@Override
 	public Firestation deleteFirestationByAddress(String address) {
-		PersonsInfos personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Firestation> firestations = findAllFirestations();
 		Firestation firestationToDelete = new Firestation();
 		

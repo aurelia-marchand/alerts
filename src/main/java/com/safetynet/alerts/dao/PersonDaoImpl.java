@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.model.PersonsInfos;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +52,7 @@ public class PersonDaoImpl implements PersonDaoI {
 	@Override
 	public Person savePerson(Person personToPost) {
 		
-		PersonsInfos personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Person> persons = findAllPersons();
 		Person newPerson = personToPost;
 		
@@ -67,7 +66,7 @@ public class PersonDaoImpl implements PersonDaoI {
 
 	@Override
 	public Person updatePerson(Person personToPut) {
-		PersonsInfos personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Person> persons = findAllPersons();
 		Person personToUpdate = personToPut;
 		int index = 0;
@@ -86,7 +85,7 @@ public class PersonDaoImpl implements PersonDaoI {
 
 	@Override
 	public Person deletePersonByFirstNameAndLastName(String firstName, String lastName) {
-		PersonsInfos personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Person> persons = findAllPersons();
 		Person personToDelete = null;
 		

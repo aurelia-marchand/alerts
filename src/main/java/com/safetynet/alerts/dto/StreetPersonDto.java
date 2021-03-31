@@ -8,7 +8,11 @@ import lombok.Data;
 
 @Data
 @Component
-public class CommunityEmailDto {
+public class StreetPersonDto {
 
-	List<String> emails;
+	String lastName;
+	String phone;
+	int age;
+	List<String> medications;
+	List<String> allergies;
 }
