@@ -4,13 +4,15 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
+@Validated
 public class PersonController {
 
 	@Autowired
@@ -34,38 +37,29 @@ public class PersonController {
 	 * @return url new person
 	 */
 	@PostMapping("/person")
-	public ResponseEntity<Void> postPerson(@RequestBody Person personToPost) {
+	public ResponseEntity<Void> postPerson(@Valid @RequestBody Person personToPost) {
 		log.info("POST /person called");
 		String firstName = personToPost.getFirstName();
 		String lastName = personToPost.getLastName();
 
-		
-		try {
-			Person person = personService.getPerson(firstName, lastName);
-			if (person != null) {
-				
-				throw new DonneeDejaExistanteException("La personne que vous voulez créer existe déjà !");
-			} else {
+		Person person = personService.getPerson(firstName, lastName);
+		if (person != null) {
+			log.error("La personne existe déjà");
+			throw new DonneeDejaExistanteException("La personne que vous voulez créer existe déjà !");
+		} else {
+			Person personNew = personService.postPerson(personToPost);
+			log.info("Succès de la requête, la personne a bien été crée : "+ personNew);
+			// création de l'url pour la redirection vers la personne créee
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("firstName", firstName);
+			params.put("lastName", lastName);
 
-				personService.postPerson(personToPost);
-				log.info("Personne bien crée");
-				// création de l'url pour la redirection vers la personne créee
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("firstName", firstName);
-				params.put("lastName", lastName);
+			URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/person")
+					.queryParam("firstName", firstName).queryParam("lastName", lastName).buildAndExpand(params).toUri();
 
-				URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/person")
-						.queryParam("firstName", firstName).queryParam("lastName", lastName).buildAndExpand(params)
-						.toUri();
+			log.info("uri created = " + location);
 
-				log.info("uri created = " + location);
-
-				return ResponseEntity.created(location).build();
-
-			} 
-		} catch (DonneeDejaExistanteException e) {
-			log.error("erreur : " + e);
-			return ResponseEntity.unprocessableEntity().build();
+			return ResponseEntity.created(location).build();
 		}
 	}
 
@@ -76,38 +70,34 @@ public class PersonController {
 	 * 
 	 */
 	@PutMapping("/person")
-	public ResponseEntity<Void> putPerson(@RequestParam("firstName") String firstName,
-			@RequestParam("lastName") String lastName, @RequestBody Person personToPut) {
+	public ResponseEntity<Void> putPerson(@Valid @RequestBody Person personToPut) {
+		log.info("PUT /person/ called");
 
-		log.info("PUT /person/" + firstName + "/+" + lastName + " called");
+		String firstName = personToPut.getFirstName();
+		String lastName = personToPut.getLastName();
 
 		Person person = personService.getPerson(firstName, lastName);
 
-		try {
-			if (person == null) {
-				
-				throw new DonneeIntrouvableException("La personne demandée n'existe pas");
-			} else {
-				personToPut.setFirstName(firstName);
-				personToPut.setLastName(lastName);
-				personService.putPerson(personToPut);
-				log.info("Requête ok, " + firstName + " " + lastName + " a bien été modifiée");
+		if (person == null) {
+			throw new DonneeIntrouvableException("La personne demandée n'existe pas");
 
-				// création de l'url pour la redirection vers la personne modifiée
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("firstName", firstName);
-				params.put("lastName", lastName);
+		} else {
+			personToPut.setFirstName(firstName);
+			personToPut.setLastName(lastName);
+			personService.putPerson(personToPut);
+			log.info("Requête ok, " + firstName + " " + lastName + " a bien été modifiée");
 
-				URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/person")
-						.queryParam("firstName", firstName).queryParam("lastName", lastName).buildAndExpand(params)
-						.toUri();
-				log.info("uri created = " + location);
-				return ResponseEntity.created(location).build();
-			}
-		} catch (DonneeIntrouvableException e) {
-			log.error("erreur : " + e);
+			// création de l'url pour la redirection vers la personne modifiée
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("firstName", firstName);
+			params.put("lastName", lastName);
+
+			URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/person")
+					.queryParam("firstName", firstName).queryParam("lastName", lastName).buildAndExpand(params).toUri();
+			log.info("uri created = " + location);
+			return ResponseEntity.created(location).build();
 		}
-		return ResponseEntity.notFound().build();
+
 	}
 
 	/**
@@ -117,26 +107,20 @@ public class PersonController {
 	 * 
 	 */
 	@DeleteMapping("/person")
-	public ResponseEntity<Void> deletePerson(@RequestParam("firstName") String firstName,
-			@RequestParam("lastName") String lastName) {
-		log.info("DELETE /person/{firstName}/{lastName} called");
-
-		try {
+	public ResponseEntity<Void> deletePerson(@Valid @RequestBody Person personToDelete) {
+		log.info("DELETE /person/ called");
+		String firstName = personToDelete.getFirstName();
+		String lastName = personToDelete.getLastName();
+	
 			Person person = personService.getPerson(firstName, lastName);
 			if (person == null) {
+				log.error("La requête ne peut aboutir, la personne n'existe pas !");
 				throw new DonneeIntrouvableException("La personne demandée n'existe pas");
-
 			} else {
 				personService.deletePerson(firstName, lastName);
 				log.info("Requête ok, " + firstName + " " + lastName + " a bien été supprimé");
 				return ResponseEntity.ok(null);
 			}
-
-		} catch (DonneeIntrouvableException e) {
-			log.error("erreur : " + e);
-			return ResponseEntity.noContent().build();
-		}
-
 	}
 
 }

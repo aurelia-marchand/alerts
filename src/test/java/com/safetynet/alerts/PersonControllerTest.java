@@ -1,5 +1,6 @@
 package com.safetynet.alerts;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -57,9 +58,32 @@ class PersonControllerTest {
 		//ARRANGE
 		when(personService.getPerson("Tessa", "Carman")).thenReturn(personTest3);
 		//ACT AND ASSERT
-		mockMvc.perform(delete("/person?firstName=Tessa&lastName=Carman")).andExpect(status().isOk());
+		mockMvc.perform(delete("/person").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(personTest3))).andExpect(status().isOk());
 
 		verify(personService).deletePerson("Tessa", "Carman");
+	}
+	
+	@Test
+	void testDeletPersonIfNotExist() throws Exception {
+		//ARRANGE
+		when(personService.getPerson("Tessa", "Carman")).thenReturn(null);
+		//ACT AND ASSERT
+		mockMvc.perform(delete("/person").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(personTest2))).andExpect(status().isNotFound());
+
+		verify(personService, times(0)).deletePerson("Tessa", "Carman");
+	}
+	
+	@Test
+	void testDeletPersonWithNotValidRequest() throws Exception {
+		//ARRANGE
+		Person personneInvalide = new Person();
+		personneInvalide.setFirstName("");
+		//ACT AND ASSERT
+		mockMvc.perform(delete("/person").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(personneInvalide))).andExpect(status().isBadRequest());
+
 	}
 
 	@Test
@@ -68,8 +92,30 @@ class PersonControllerTest {
 		when(personService.getPerson("Jonanathan", "Marrack")).thenReturn(personTest2);
 		when(personService.putPerson(personTest2)).thenReturn(personTest2);
 		//ACT AND ASSERT
-		mockMvc.perform(put("/person?firstName=Jonanathan&lastName=Marrack").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(put("/person").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(personTest2))).andExpect(status().isCreated());
+
+	}
+	
+	@Test
+	void testPutPersonIfNotExist() throws Exception {
+		//ARRANGE
+		when(personService.getPerson("Jonanathan", "Marrack")).thenReturn(null);
+		//ACT AND ASSERT
+		mockMvc.perform(put("/person").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(personTest2))).andExpect(status().isNotFound());
+
+	}
+	
+	@Test
+	void testPutPersonWithNotValidRequest() throws Exception {
+		//ARRANGE
+		Person personTest = new Person();
+		personTest.setFirstName("");
+		
+		//ACT AND ASSERT
+		mockMvc.perform(put("/person").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(personTest))).andExpect(status().isBadRequest());
 
 	}
 	
@@ -79,8 +125,29 @@ class PersonControllerTest {
 		when(personService.getPerson("aurelia", "marchand")).thenReturn(null);
 		when(personService.postPerson(personTest4)).thenReturn(personTest4);
 		//ACT AND ASSERT
-		mockMvc.perform(post("/person?firstName=aurelia&lastName=marchand").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(personTest4))).andExpect(status().isCreated());
+
+	}
+	
+	@Test
+	void testPostPersonIfAlreadyExist() throws Exception {
+		//ARRANGE
+		when(personService.getPerson("Aurélia", "Marchand")).thenReturn(personTest4);
+		//ACT AND ASSERT
+		mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(personTest4))).andExpect(status().isConflict());
+
+	}
+	
+	@Test
+	void testPostPersonWithInvalidRequest() throws Exception {
+		//ARRANGE
+		Person personInvalide = new Person();
+		personInvalide.setFirstName("");
+		//ACT AND ASSERT
+		mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(personInvalide))).andExpect(status().isBadRequest());
 
 	}
 

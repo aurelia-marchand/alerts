@@ -29,12 +29,13 @@ public class FirestationServiceImpl implements FirestationServiceI {
 		String address = firestation.getAddress();
 		
 		Firestation firestationToPost = firestationDao.findFirestationByAddress(address);
+		log.debug("firestation dans le service : " + firestationToPost);
 
 		if (firestationToPost == null) {
 			log.debug("envoi de la firestation à créer au dao");
 			firestationDao.saveFirestation(firestation);
 		} else {
-			log.error("Firestation déjà existante");
+			log.error("Firestation déjà existante dans le dao");
 		}
 
 		return firestation;

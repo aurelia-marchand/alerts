@@ -36,16 +36,13 @@ public class PersonDaoImpl implements PersonDaoI {
 		List<Person> persons = accessJson.getData().getPersons();
 		log.debug("persons : " + persons);
 		for (Person person : persons) {
-			log.debug("firstname = " + firstName + " comparé à " + person.getFirstName());
-			log.debug("lastname = " + lastName + " comparé à " + person.getLastName());
-
 			if (person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName)) {
 				log.debug("dao renvoi : "+ person);
 				personToGet = person;
-				
+				log.debug("personne trouvée : " + personToGet);
 			} 
 		}
-	
+	log.debug("personne introuvable : " + personToGet);
 		return personToGet;
 	}
 
@@ -80,7 +77,7 @@ public class PersonDaoImpl implements PersonDaoI {
 	persons.set(index, personToPut);
 	personsInfos.setPersons(persons);
 	accessJson.writeData(personsInfos);
-		return null;
+		return personToPut;
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package com.safetynet.alerts;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -100,17 +99,9 @@ class PersonServiceTest {
 		verify(personDao).savePerson(personTest1);
 	}
 	
-	@Test
-	void testPostPersonIfAlreadyExist() {
-		when(personDao.findPersonByFirstNameAndLastName("Felicia", "Boyd")).thenReturn(personTest1);
-		log.debug("personnetest1 : " + personTest1);
-		personServiceImpl.postPerson(personTest1);
-				
-		verify(personDao, times(0)).savePerson(personTest1);
-	}
 	
 	@Test
-	void testPutPersonIfExist() {
+	void testPutPerson() {
 		when(personDao.findPersonByFirstNameAndLastName("Felicia", "Boyd")).thenReturn(personTest1);
 		
 		personTest4 = new Person("Felicia", "Boyd", "14 place de la halle", "Culver", 97451, "841-874-6544", "jaboyd@email.com");
@@ -121,15 +112,4 @@ class PersonServiceTest {
 		verify(personDao).updatePerson(personTest4);
 	}
 	
-	@Test
-	void testPutPersonIfNotExist() {
-		when(personDao.findPersonByFirstNameAndLastName("Felicia", "Boyd")).thenReturn(null);
-				
-		personServiceImpl.putPerson(personTest4);
-		
-				
-		verify(personDao, times(0)).updatePerson(personTest4);
-	}
-	
-
 }

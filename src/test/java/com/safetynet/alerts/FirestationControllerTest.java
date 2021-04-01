@@ -1,5 +1,6 @@
 package com.safetynet.alerts;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -36,6 +37,7 @@ class FirestationControllerTest {
 	List<Firestation> firestations = new ArrayList<>();
 	Firestation firestation1 = new Firestation();
 	Firestation firestation2 = new Firestation();
+	
 
 	@BeforeEach
 	private void setUpPerTest() {
@@ -63,6 +65,31 @@ class FirestationControllerTest {
 
 		verify(firestationService).postFirestation(firestation1);
 	}
+	
+	@Test
+	void testPostFirestationWithInvalidRequest() throws Exception {
+		// ARRANGE
+		Firestation firestation3 = new Firestation();
+		firestation3.setStation(0);
+		firestation3.setAddress("");
+		
+		// ACT AND ASSERT
+		mockMvc.perform(post("/firestation")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(firestation3)))
+				.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	void testPostFirestationIfAlreadyExist() throws Exception {
+		// ARRANGE
+		when(firestationService.getFirestation("8 rue du general leclerc")).thenReturn(firestation1);
+		//ACT AND ASSERT
+				mockMvc.perform(post("/firestation")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(asJsonString(firestation1)))
+						.andExpect(status().isConflict());
+	}
 
 	@Test
 	void testPutFirestation() throws Exception {
@@ -70,10 +97,31 @@ class FirestationControllerTest {
 		when(firestationService.getFirestation("14 place de la halle")).thenReturn(firestation2);
 		when(firestationService.putFirestation(firestation2)).thenReturn(firestation2);
 		//ACT AND ASSERT
-		mockMvc.perform(put("/firestation?address=14 place de la halle").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(put("/firestation").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(firestation2))).andExpect(status().isCreated());
 	
 		verify(firestationService).putFirestation(firestation2);
+	}
+	
+	@Test
+	void testPutFirestationIfNotExist() throws Exception {
+		//ARRANGE
+		when(firestationService.getFirestation("14 place de la halle")).thenReturn(null);
+		//ACT AND ASSERT
+		mockMvc.perform(put("/firestation").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(firestation2))).andExpect(status().isNotFound());
+	
+	}
+	
+	@Test
+	void testPutFirestationWithNotValidRequest() throws Exception {
+		//ARRANGE
+		Firestation firestationNonValide = new Firestation();
+		firestationNonValide.setStation(0);
+		//ACT AND ASSERT
+		mockMvc.perform(put("/firestation").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(firestationNonValide))).andExpect(status().isBadRequest());
+	
 	}
 
 	@Test
@@ -81,9 +129,33 @@ class FirestationControllerTest {
 		//ARRANGE
 		when(firestationService.getFirestation("14 place de la halle")).thenReturn(firestation2);
 		//ACT AND ASSERT
-		mockMvc.perform(delete("/firestation?address=14 place de la halle")).andExpect(status().isOk());
+		mockMvc.perform(delete("/firestation").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(firestation2))).andExpect(status().isOk());
 	
 		verify(firestationService).deleteFirestation("14 place de la halle");
+	}
+	
+	@Test
+	void testDeleteFirestationIfNotExist() throws Exception {
+		//ARRANGE
+		when(firestationService.getFirestation("14 place de la halle")).thenReturn(null);
+		//ACT AND ASSERT
+		mockMvc.perform(delete("/firestation").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(firestation2))).andExpect(status().isNotFound());
+	
+		verify(firestationService, times(0)).deleteFirestation("14 place de la halle");
+	}
+	
+	@Test
+	void testDeleteFirestationWithNotValidRequest() throws Exception {
+		//ARRANGE
+		Firestation firestationNonValide = new Firestation();
+		firestationNonValide.setAddress("");
+		//ACT AND ASSERT
+		mockMvc.perform(delete("/firestation").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(firestationNonValide))).andExpect(status().isBadRequest());
+	
+		verify(firestationService, times(0)).deleteFirestation("14 place de la halle");
 	}
 
 	public static String asJsonString(final Object firestation2) {

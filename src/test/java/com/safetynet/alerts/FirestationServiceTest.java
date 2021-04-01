@@ -1,6 +1,7 @@
 package com.safetynet.alerts;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ class FirestationServiceTest {
 		Firestation newFirestation = firestationServiceImpl.postFirestation(firestationToPost);
 		//ASSERT
 		assertThat(newFirestation.getStation()).isEqualTo(6);
+		verify(firestationDaoI).saveFirestation(firestationToPost);
 		}
 	
 	@Test

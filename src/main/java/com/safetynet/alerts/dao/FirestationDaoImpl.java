@@ -21,19 +21,16 @@ public class FirestationDaoImpl implements FirestationDaoI {
 	@Override
 	public List<Firestation> findAllFirestations() {
 		List<Firestation> firestations;
-		try {
+		
 			firestations = accessJson.getData().getFirestations();
 			return firestations;
-		} catch (Exception e) {
-			log.error("erreur pendant la récupération de la liste de firestations : " + e);	
-		}
-		return null;
+		
 	}
 
 	@Override
 	public Firestation findFirestationByAddress(String address) {
 		List<Firestation> firestations = accessJson.getData().getFirestations();
-		Firestation firestationToGet = new Firestation();
+		Firestation firestationToGet = null;
 		for (Firestation firestation : firestations) {
 			if (firestation.getAddress().equalsIgnoreCase(address)) {
 				log.debug("dao renvoi : "+ firestation);
