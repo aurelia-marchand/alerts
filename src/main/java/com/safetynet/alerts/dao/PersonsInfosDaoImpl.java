@@ -5,11 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.safetynet.alerts.dto.DistrictPersonDto;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
@@ -20,17 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 
-	@Autowired
-	Datas personsInfos;
+	
 	@Autowired
 	AccessJsonI accessJson;
-	@Autowired
-	DistrictPersonDto personsByStationDto;
+	
 
 	@Override
 	public List<Person> findPersonsByStationNumber(int station) {
 		// Récupération des données du fichier Json via interface
-		personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Person> persons = personsInfos.getPersons();
 		List<Firestation> firestations = personsInfos.getFirestations();
 		List<Person> personsArenvoyer = new ArrayList<>();
@@ -53,7 +49,7 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 
 	@Override
 	public List<Person> findPersonsByAddress(String address) {
-		personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Person> persons = personsInfos.getPersons();
 		List<Person> resultPersonByAddres = new ArrayList<>();
 		for (Person person : persons) {
@@ -66,7 +62,7 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 
 	@Override
 	public List<MedicalRecord> findMedicalRecordsByListPerson(List<Person> personneList) {
-		personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<MedicalRecord> medicalRecords = personsInfos.getMedicalrecords();
 		List<MedicalRecord> resultatMedicalRecordByName = new ArrayList<>();
 		for (MedicalRecord medicalRecord : medicalRecords) {
@@ -82,7 +78,7 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 
 	@Override
 	public int findStationByAddress(String address) {
-		personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Firestation> firestations = personsInfos.getFirestations();
 		int station = 0;
 		for (Firestation firestation : firestations) {
@@ -95,7 +91,7 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 
 	@Override
 	public Set<String> findAddressByStation(int station) {
-		personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Firestation> firestations = personsInfos.getFirestations();
 		Set<String> address = new HashSet<>();
 		for (Firestation firestation : firestations) {
@@ -109,7 +105,7 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 	@Override
 	public List<Person> findPersonsByStation(List<Integer> stations) {
 		List<Integer> stationsList = stations;
-		personsInfos = accessJson.getData();
+		Datas personsInfos = accessJson.getData();
 		List<Firestation> firestations = personsInfos.getFirestations();
 		List<Person> persons = personsInfos.getPersons();
 		List<Person> personnes = new ArrayList<>();

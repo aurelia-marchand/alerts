@@ -26,7 +26,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 class PersonDaoImplTest {
 
 	@Autowired
-	PersonDaoI personDaoI;
+	PersonDaoImpl personDaoImpl;
 
 	@MockBean
 	AccessJsonI accessJsonI;
@@ -54,7 +54,7 @@ class PersonDaoImplTest {
 		// ARRANGE
 		when(accessJsonI.getData()).thenReturn(personsInfos);
 		// ACT
-		List<Person> result = personDaoI.findAllPersons();
+		List<Person> result = personDaoImpl.findAllPersons();
 		// ASSERT
 		assertThat(result.size()).isEqualTo(3);
 	}
@@ -64,7 +64,7 @@ class PersonDaoImplTest {
 		// ARRANGE
 		when(accessJsonI.getData()).thenReturn(personsInfos);
 		// ACT
-		Person result = personDaoI.findPersonByFirstNameAndLastName("Felicia", "Boyd");
+		Person result = personDaoImpl.findPersonByFirstNameAndLastName("Felicia", "Boyd");
 		// ASSERT
 		assertThat("Felicia").isEqualToIgnoringCase(result.getFirstName());
 	}
@@ -77,7 +77,7 @@ class PersonDaoImplTest {
 				"aure@email.com");
 
 		// ACT
-		Person newPerson = personDaoI.savePerson(personToPost);
+		Person newPerson = personDaoImpl.savePerson(personToPost);
 
 		// ASSERT
 		assertThat(personsInfos.getPersons()).contains(newPerson);
@@ -91,7 +91,7 @@ class PersonDaoImplTest {
 				"aure@email.com");
 
 		// ACT
-		personDaoI.updatePerson(personToPut);
+		personDaoImpl.updatePerson(personToPut);
 
 		// ASSERT
 		List<Person> persons = personsInfos.getPersons();
@@ -110,7 +110,7 @@ class PersonDaoImplTest {
 		// ARRANGE
 		when(accessJsonI.getData()).thenReturn(personsInfos);
 		// ACT
-		personDaoI.deletePersonByFirstNameAndLastName("Felicia", "Boyd");
+		personDaoImpl.deletePersonByFirstNameAndLastName("Felicia", "Boyd");
 		List<Person> result = personsInfos.getPersons();
 		// ASSERT
 		assertThat(2).isEqualTo(result.size());
