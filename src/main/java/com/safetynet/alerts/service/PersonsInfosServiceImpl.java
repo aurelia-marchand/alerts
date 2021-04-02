@@ -39,17 +39,18 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 
 	@Autowired
 	PersonsInfosDaoI personsInfosDao;
-	
+
 	@Override
 	public DistrictPeople getListPersonsByStationNumber(int station) {
 
 		// Récupération des personnes couvertes par la station
 		List<Person> persons = personsInfosDao.findPersonsByStationNumber(station);
-		
-		// Préparation de la liste et des entités pour stocker les personnes avec uniquement les
+
+		// Préparation de la liste et des entités pour stocker les personnes avec
+		// uniquement les
 		// valeurs qu'on veut renvoyer
 		List<DistrictPersonDto> districtPeopleListDto = new ArrayList<>();
-		DistrictPeople districtPeople= new DistrictPeople();
+		DistrictPeople districtPeople = new DistrictPeople();
 		DistrictPersonDto districtPersonsDto = new DistrictPersonDto();
 
 		for (Person person : persons) {
@@ -82,10 +83,11 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		Adult adult = new Adult();
 		List<Child> children = new ArrayList<>();
 		List<Adult> adults = new ArrayList<>();
-		
+
 		ChildAlert childAlert = new ChildAlert();
 
-		// Boucle pour lier personnes et leurs dossiers medicaux, calculer leurs âges et les
+		// Boucle pour lier personnes et leurs dossiers medicaux, calculer leurs âges et
+		// les
 		// placer soit comme enfant soit comme membres de la famille
 		for (Person person : personneByAddress) {
 			for (MedicalRecord medicalRecord : medicalRecords) {
@@ -93,7 +95,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 						&& medicalRecord.getLastName().equalsIgnoreCase(person.getLastName())) {
 					int age = calculateAge(medicalRecord.getBirthdate());
 					if (age <= 18) {
-						
+
 						ModelMapper modelMapper = new ModelMapper();
 						child = modelMapper.map(person, Child.class);
 						child.setAge(age);
@@ -120,7 +122,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 	public PhoneAlert getListPhoneByStation(int station) {
 		// Récupération des numéros de téléphones par station
 		List<String> phones = personsInfosDao.findPhoneByStationNumber(station);
-		
+
 		// Préparation entité de stockage et tranfert
 		PhoneAlert phoneAlert = new PhoneAlert();
 
@@ -139,7 +141,7 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 		// Récupération des personnes à l'adresse et de leurs dossiers médicaux
 		List<Person> peopleByAddress = personsInfosDao.findPersonsByAddress(address);
 		List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByListPerson(peopleByAddress);
-		//Récupération du numéro de la station
+		// Récupération du numéro de la station
 		int station = personsInfosDao.findStationByAddress(address);
 
 		// Préparation entités de transfert
@@ -252,24 +254,45 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 	}
 
 	@Override
-	public PersonInfoDto getPersonInfo(String firstName, String lastName) {
-		Person person = personsInfosDao.findPersonByFistNameAndLastName(firstName, lastName);
-		log.debug("person : " + person);
-		if (person != null) {
-			MedicalRecord medicalRecord = personsInfosDao.findMedicalRecordsByPerson(person);
-			log.debug("dossier med : " + medicalRecord);
+	public List<PersonInfoDto> getPersonInfo(String firstName, String lastName) {
+		List<Person> personsList = personsInfosDao.findPersonByFistNameAndLastName(firstName, lastName);
+		log.debug("person : " + personsList);
+		if (personsList != null) {
+			List<MedicalRecord> medicalRecords = personsInfosDao.findMedicalRecordsByListPerson(personsList);
+			log.debug("dossier med : " + medicalRecords);
 
-			PersonInfoDto personInfoDto = new PersonInfoDto();
-			int old = calculateAge(medicalRecord.getBirthdate());
-			log.debug("old : " + old);
-
-			ModelMapper modelMapper = new ModelMapper();
-			personInfoDto = modelMapper.map(person, PersonInfoDto.class);
+			List<PersonInfoDto> personInfoDtoList = new ArrayList<>();
+			Person person = new Person();
+			person.setFirstName(firstName);
+			person.setLastName(lastName);
+log.debug("liste avant la boucle : " + medicalRecords.size());
 			
-			personInfoDto.setOld(old);
-			personInfoDto.setMedications(medicalRecord.getMedications());
-			personInfoDto.setAllergies(medicalRecord.getAllergies());
-			return personInfoDto;
+				for (MedicalRecord medicalRecord : medicalRecords) {
+					if (person.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
+							&& person.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
+						PersonInfoDto personInfoDto = new PersonInfoDto();
+						int old = calculateAge(medicalRecord.getBirthdate());
+						log.debug("old : " + old);
+						ModelMapper modelMapper = new ModelMapper();
+						personInfoDto = modelMapper.map(person, PersonInfoDto.class);
+						personInfoDto.setOld(old);
+						personInfoDto.setMedications(medicalRecord.getMedications());
+						personInfoDto.setAllergies(medicalRecord.getAllergies());
+						personInfoDtoList.add(personInfoDto);
+						for (Person personne : personsList) {
+							if (personne.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
+									&& personne.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
+								personInfoDto.setEmail(personne.getEmail());
+								personInfoDto.setAddress(personne.getAddress());
+
+							}
+						}
+					}
+				}
+				
+				
+			
+			return personInfoDtoList;
 		}
 		return null;
 	}

@@ -22,7 +22,7 @@ public interface PersonsInfosServiceI {
 
 	public List<StationsPeople> getPeopleByListStation(List<Integer> stations);
 
-	public PersonInfoDto getPersonInfo(String firstName, String lastName);
+	public List<PersonInfoDto> getPersonInfo(String firstName, String lastName);
 
 	public CommunityEmail getCommunityEmail(String city);
 }

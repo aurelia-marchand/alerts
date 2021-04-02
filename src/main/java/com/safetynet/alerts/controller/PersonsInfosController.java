@@ -158,10 +158,10 @@ public class PersonsInfosController {
 	 * 
 	 */
 	@GetMapping("/personInfo")
-	public PersonInfoDto GetPersonInfo(@RequestParam("firstName") String firstName,
+	public List<PersonInfoDto> GetPersonInfo(@RequestParam("firstName") String firstName,
 			@RequestParam("lastName") String lastName) {
 		log.info("Get /personInfo/firstname/lasname called");
-		PersonInfoDto personInfoDto = null;
+		List<PersonInfoDto> personInfoDto = null;
 		
 			personInfoDto = personsInfosService.getPersonInfo(firstName, lastName);
 

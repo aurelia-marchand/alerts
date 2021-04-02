@@ -19,12 +19,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.safetynet.alerts.controller.PersonsInfosController;
 import com.safetynet.alerts.dto.DistrictPersonDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
-import com.safetynet.alerts.model.PhoneAlert;
 import com.safetynet.alerts.model.ChildAlert;
 import com.safetynet.alerts.model.CommunityEmail;
 import com.safetynet.alerts.model.DistrictPeople;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
+import com.safetynet.alerts.model.PhoneAlert;
 import com.safetynet.alerts.model.StationsPeople;
 import com.safetynet.alerts.model.StreetPeople;
 import com.safetynet.alerts.service.PersonsInfosServiceI;
@@ -127,6 +127,12 @@ class PersonsInfosControllerTest {
 		//ACT AND ASSERT
 		mockMvc.perform(get("/firestation?stationNumber=10")).andExpect(status().isNotFound());
 	}
+	
+	@Test
+	void testGetPersonsByStationWithNotValidArgument() throws Exception {
+		//ACT AND ASSERT
+		mockMvc.perform(get("/firestation?")).andExpect(status().isBadRequest());
+	}
 
 	@Test
 	void testGetChidrenByAddressIfExist() throws Exception {
@@ -144,6 +150,12 @@ class PersonsInfosControllerTest {
 		when(personsInfosService.getListChildrenByAddress("place de la halle")).thenReturn(childAlertDto);
 		//ACT AND ASSERT
 		mockMvc.perform(get("/childAlert?address=1509 Culver St")).andExpect(status().isNotFound());
+	}
+	
+	@Test
+	void testGetChidrenByAddressWithNotValidArgument() throws Exception {
+		//ACT AND ASSERT
+		mockMvc.perform(get("/childAlert?")).andExpect(status().isBadRequest());
 	}
 	
 	@Test
@@ -209,7 +221,7 @@ class PersonsInfosControllerTest {
 	@Test
 	void testGetPersonInfoIfExist() throws Exception {
 		//ARRANGE
-		PersonInfoDto personInfo = new PersonInfoDto();
+		List<PersonInfoDto> personInfo = new ArrayList<>();
 		
 		when(personsInfosService.getPersonInfo("felicia", "boyd")).thenReturn(personInfo);
 		//ACT AND ASSERT

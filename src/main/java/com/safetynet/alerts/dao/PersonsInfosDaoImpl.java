@@ -125,12 +125,16 @@ public class PersonsInfosDaoImpl implements PersonsInfosDaoI {
 	}
 
 	@Override
-	public Person findPersonByFistNameAndLastName(String firstName, String lastName) {
+	public List<Person> findPersonByFistNameAndLastName(String firstName, String lastName) {
 		List<Person> persons = accessJson.getData().getPersons();
+		
+		List<Person> personsList = new ArrayList<>();
+		
 		for (Person person : persons) {
 			if (person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName)) {
 				log.debug("dao renvoi : " + person);
-				return person;
+				personsList.add(person);
+				return personsList;
 			}
 		}
 		return null;

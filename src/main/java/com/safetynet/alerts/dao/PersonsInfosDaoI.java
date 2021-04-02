@@ -20,7 +20,7 @@ public interface PersonsInfosDaoI {
 
 	public List<Person> findPersonsByStation(List<Integer> stations);
 
-	public Person findPersonByFistNameAndLastName(String firstName, String lastName);
+	public List<Person> findPersonByFistNameAndLastName(String firstName, String lastName);
 
 	public MedicalRecord findMedicalRecordsByPerson(Person person);
 

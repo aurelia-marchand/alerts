@@ -188,9 +188,9 @@ class PersonInfosDaoTest {
 	void testFindPersonsByFirstNameAndLastName() {
 		
 		//ACT
-		Person result = personsInfosDaoImpl.findPersonByFistNameAndLastName("Tessa","Carman");
+		List<Person> result = personsInfosDaoImpl.findPersonByFistNameAndLastName("Tessa","Carman");
 		//ASSERT
-		assertThat(result).isEqualTo(personTest3);
+		assertThat(result).contains(personTest3);
 	}
 	
 	@Test
