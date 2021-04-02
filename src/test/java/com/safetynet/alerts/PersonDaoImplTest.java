@@ -16,18 +16,17 @@ import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.safetynet.alerts.dao.AccessJsonI;
 import com.safetynet.alerts.dao.Datas;
+import com.safetynet.alerts.dao.PersonDaoI;
 import com.safetynet.alerts.dao.PersonDaoImpl;
 import com.safetynet.alerts.model.Person;
 
-import lombok.extern.slf4j.Slf4j;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @WebMvcTest(PersonDaoImpl.class)
-@Slf4j
 class PersonDaoImplTest {
 
 	@Autowired
-	PersonDaoImpl personDaoImpl;
+	PersonDaoI personDaoI;
 
 	@MockBean
 	AccessJsonI accessJsonI;
@@ -55,7 +54,7 @@ class PersonDaoImplTest {
 		// ARRANGE
 		when(accessJsonI.getData()).thenReturn(personsInfos);
 		// ACT
-		List<Person> result = personDaoImpl.findAllPersons();
+		List<Person> result = personDaoI.findAllPersons();
 		// ASSERT
 		assertThat(result.size()).isEqualTo(3);
 	}
@@ -65,7 +64,7 @@ class PersonDaoImplTest {
 		// ARRANGE
 		when(accessJsonI.getData()).thenReturn(personsInfos);
 		// ACT
-		Person result = personDaoImpl.findPersonByFirstNameAndLastName("Felicia", "Boyd");
+		Person result = personDaoI.findPersonByFirstNameAndLastName("Felicia", "Boyd");
 		// ASSERT
 		assertThat("Felicia").isEqualToIgnoringCase(result.getFirstName());
 	}
@@ -78,7 +77,7 @@ class PersonDaoImplTest {
 				"aure@email.com");
 
 		// ACT
-		Person newPerson = personDaoImpl.savePerson(personToPost);
+		Person newPerson = personDaoI.savePerson(personToPost);
 
 		// ASSERT
 		assertThat(personsInfos.getPersons()).contains(newPerson);
@@ -92,7 +91,7 @@ class PersonDaoImplTest {
 				"aure@email.com");
 
 		// ACT
-		personDaoImpl.updatePerson(personToPut);
+		personDaoI.updatePerson(personToPut);
 
 		// ASSERT
 		List<Person> persons = personsInfos.getPersons();
@@ -111,7 +110,7 @@ class PersonDaoImplTest {
 		// ARRANGE
 		when(accessJsonI.getData()).thenReturn(personsInfos);
 		// ACT
-		personDaoImpl.deletePersonByFirstNameAndLastName("Felicia", "Boyd");
+		personDaoI.deletePersonByFirstNameAndLastName("Felicia", "Boyd");
 		List<Person> result = personsInfos.getPersons();
 		// ASSERT
 		assertThat(2).isEqualTo(result.size());

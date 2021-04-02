@@ -2,6 +2,8 @@ package com.safetynet.alerts.model;
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.stereotype.Component;
 
 import lombok.Data;
@@ -10,8 +12,10 @@ import lombok.Data;
 @Component
 public class MedicalRecord {
 
+	@NotBlank
 	private String firstName;
 	
+	@NotBlank
 	private String lastName;
 	
 	private String birthdate;

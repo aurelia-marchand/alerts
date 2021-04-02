@@ -1,5 +1,6 @@
 package com.safetynet.alerts;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -13,7 +14,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,8 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alerts.controller.MedicalRecordController;
-import com.safetynet.alerts.dto.DistrictPersonDto;
-import com.safetynet.alerts.model.DistrictPeople;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.service.MedicalRecordServiceI;
 
@@ -72,19 +70,58 @@ class MedicalRecordControllerTest {
 		//ARRANGE
 		when(medicalRecordService.getMedicalRecord("Felicia", "Boyd")).thenReturn(med1);
 		//ACT AND ASSERT
-		mockMvc.perform(delete("/medicalRecord?firstName=Felicia&lastName=Boyd")).andExpect(status().isOk());
+		mockMvc.perform(delete("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(med1))).andExpect(status().isOk());
 		verify(medicalRecordService).deleteMedicalRecord("Felicia", "Boyd");
+	}
+	
+	@Test
+	void testDeletMedicalRecordIfNotExist() throws Exception {
+		//ARRANGE
+		when(medicalRecordService.getMedicalRecord("Felicia", "Boyd")).thenReturn(null);
+		//ACT AND ASSERT
+		mockMvc.perform(delete("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(med1))).andExpect(status().isNotFound());
+		verify(medicalRecordService, times(0)).deleteMedicalRecord("Felicia", "Boyd");
+	}
+	
+	@Test
+	void testDeletMedicalRecordWithNotValidRequest() throws Exception {
+		//ARRANGE
+		MedicalRecord medNonValid = new MedicalRecord();
+		medNonValid.setFirstName("");
+		//ACT AND ASSERT
+		mockMvc.perform(delete("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(medNonValid))).andExpect(status().isBadRequest());
 	}
 	
 	@Test
 	void testPutMedicalRecord() throws Exception {
 		//ARRANGE
-		when(medicalRecordService.getMedicalRecord("Jonanathan", "Marrack")).thenReturn(med2);
+		when(medicalRecordService.getMedicalRecord("Jonhathan", "Marrack")).thenReturn(med2);
 		when(medicalRecordService.putMedicalRecord(med2)).thenReturn(med2);
 		//ACT AND ASSERT
-		mockMvc.perform(put("/medicalRecord?firstName=Jonanathan&lastName=Marrack").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(put("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(med2))).andExpect(status().isCreated());
-
+	}
+	
+	@Test
+	void testPutMedicalRecordIfNotExist() throws Exception {
+		//ARRANGE
+		when(medicalRecordService.getMedicalRecord("Jonhathan", "Marrack")).thenReturn(null);
+		//ACT AND ASSERT
+		mockMvc.perform(put("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(med2))).andExpect(status().isNotFound());
+	}
+	
+	@Test
+	void testPutMedicalRecordWithNotValidRequest() throws Exception {
+		//ARRANGE
+		MedicalRecord medNonValid = new MedicalRecord();
+		medNonValid.setFirstName("");
+		//ACT AND ASSERT
+		mockMvc.perform(put("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(medNonValid))).andExpect(status().isBadRequest());
 	}
 	
 	@Test
@@ -93,8 +130,29 @@ class MedicalRecordControllerTest {
 		when(medicalRecordService.getMedicalRecord("Tony", "Cooper")).thenReturn(null);
 		when(medicalRecordService.postMedicalRecord(med3)).thenReturn(med3);
 		//ACT AND ASSERT
-		mockMvc.perform(post("/medicalRecord?firstName=Tony&lastName=Cooper").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(med3))).andExpect(status().isCreated());
+
+	}
+	
+	@Test
+	void testPostMedicalRecordIfAlreadyExist() throws Exception {
+		//ARRANGE
+		when(medicalRecordService.getMedicalRecord("Tony", "Cooper")).thenReturn(med3);
+		//ACT AND ASSERT
+		mockMvc.perform(post("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(med3))).andExpect(status().isConflict());
+
+	}
+	
+	@Test
+	void testPostMedicalRecordWithInvalidRequest() throws Exception {
+		//ARRANGE
+		MedicalRecord medNonValid = new MedicalRecord();
+		medNonValid.setFirstName("");
+		//ACT AND ASSERT
+		mockMvc.perform(post("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(medNonValid))).andExpect(status().isBadRequest());
 
 	}
 	

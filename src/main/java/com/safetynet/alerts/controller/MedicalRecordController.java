@@ -4,13 +4,15 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
+@Validated
 public class MedicalRecordController {
 
 	@Autowired
@@ -34,7 +37,7 @@ public class MedicalRecordController {
 	 * @return - url medical record
 	 */
 	@PostMapping("/medicalRecord")
-	public ResponseEntity<Void> postMedicalRecord(@RequestBody MedicalRecord medicalRecordToPost) {
+	public ResponseEntity<Void> postMedicalRecord(@Valid @RequestBody MedicalRecord medicalRecordToPost) {
 		log.info("POST /medicalRecord called");
 		String firstName = medicalRecordToPost.getFirstName();
 		String lastName = medicalRecordToPost.getLastName();
@@ -65,9 +68,12 @@ public class MedicalRecordController {
 	 * @return -url medical record update
 	 */
 	@PutMapping("/medicalRecord")
-	public ResponseEntity<Void> putMedicalRecord(@RequestParam("firstName") String firstName,
-			@RequestParam("lastName") String lastName, @RequestBody MedicalRecord medicalRecordToPut) {
+	public ResponseEntity<Void> putMedicalRecord(@Valid @RequestBody MedicalRecord medicalRecordToPut) {
 
+		String firstName = medicalRecordToPut.getFirstName();
+		String lastName = medicalRecordToPut.getLastName();
+
+		
 		log.info("PUT /medicalRecord/" + firstName + "/+" + lastName + " called");
 
 		MedicalRecord medicalRecord = medicalRecordService.getMedicalRecord(firstName, lastName);
@@ -98,8 +104,10 @@ public class MedicalRecordController {
 	 * 
 	 */
 	@DeleteMapping("/medicalRecord")
-	public void deleteMedicalRecord(@RequestParam("firstName") String firstName,
-			@RequestParam("lastName") String lastName) {
+	public void deleteMedicalRecord(@Valid @RequestBody MedicalRecord medicalRecordToDelete) {
+		
+		String firstName = medicalRecordToDelete.getFirstName();
+		String lastName = medicalRecordToDelete.getLastName();
 		log.info("DELETE /medicalRecord/{firstName}/{lastName} called");
 
 		MedicalRecord medicalRecord = medicalRecordService.getMedicalRecord(firstName, lastName);
