@@ -42,12 +42,16 @@ To run the tests from maven, go to the folder that contains the pom.xml file and
 mvn site and mvn test to produce some reports (surefire, JaCoCo).
 
 Testing API
+
 Use postman is the good way  To test all request we have
+
 To install postman
 https://www.postman.com/
+
 Collection to test all request : https://www.getpostman.com/collections/17140a9f5af956a2e65d
 
 Deployment
+
 First of all, you have to change the environment in the application.properties file, replace test by prod
 Then there are three possibilities to deploy the project :
 1.through the IDE with "Run as", "Spring Boot App".
@@ -55,4 +59,5 @@ Then there are three possibilities to deploy the project :
 3.by running the JAR using the java -jar command.
 
 DOCUMENTATION API
+
 http://localhost:8080/swagger-ui.html#/
