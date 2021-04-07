@@ -5,9 +5,11 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Component
+@EqualsAndHashCode(callSuper=true)
 public class Child extends Person {
 
 	private String firstName;

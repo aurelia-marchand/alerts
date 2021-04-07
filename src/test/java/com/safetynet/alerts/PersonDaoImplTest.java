@@ -16,7 +16,6 @@ import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.safetynet.alerts.dao.AccessJsonI;
 import com.safetynet.alerts.dao.Datas;
-import com.safetynet.alerts.dao.PersonDaoI;
 import com.safetynet.alerts.dao.PersonDaoImpl;
 import com.safetynet.alerts.model.Person;
 

@@ -265,33 +265,30 @@ public class PersonsInfosServiceImpl implements PersonsInfosServiceI {
 			Person person = new Person();
 			person.setFirstName(firstName);
 			person.setLastName(lastName);
-log.debug("liste avant la boucle : " + medicalRecords.size());
-			
-				for (MedicalRecord medicalRecord : medicalRecords) {
-					if (person.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
-							&& person.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
-						PersonInfoDto personInfoDto = new PersonInfoDto();
-						int old = calculateAge(medicalRecord.getBirthdate());
-						log.debug("old : " + old);
-						ModelMapper modelMapper = new ModelMapper();
-						personInfoDto = modelMapper.map(person, PersonInfoDto.class);
-						personInfoDto.setOld(old);
-						personInfoDto.setMedications(medicalRecord.getMedications());
-						personInfoDto.setAllergies(medicalRecord.getAllergies());
-						personInfoDtoList.add(personInfoDto);
-						for (Person personne : personsList) {
-							if (personne.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
-									&& personne.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
-								personInfoDto.setEmail(personne.getEmail());
-								personInfoDto.setAddress(personne.getAddress());
 
-							}
+			for (MedicalRecord medicalRecord : medicalRecords) {
+				if (person.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
+						&& person.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
+					PersonInfoDto personInfoDto = new PersonInfoDto();
+					int old = calculateAge(medicalRecord.getBirthdate());
+
+					ModelMapper modelMapper = new ModelMapper();
+					personInfoDto = modelMapper.map(person, PersonInfoDto.class);
+					personInfoDto.setOld(old);
+					personInfoDto.setMedications(medicalRecord.getMedications());
+					personInfoDto.setAllergies(medicalRecord.getAllergies());
+					personInfoDtoList.add(personInfoDto);
+					for (Person personne : personsList) {
+						if (personne.getFirstName().equalsIgnoreCase(medicalRecord.getFirstName())
+								&& personne.getLastName().equalsIgnoreCase(medicalRecord.getLastName())) {
+							personInfoDto.setEmail(personne.getEmail());
+							personInfoDto.setAddress(personne.getAddress());
+
 						}
 					}
 				}
-				
-				
-			
+			}
+
 			return personInfoDtoList;
 		}
 		return null;
